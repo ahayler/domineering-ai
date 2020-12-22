@@ -58,7 +58,7 @@ public class Game {
     }
 
     public AI getWinner() {
-        return null;
+        return winner;
     }
 
     public static void makeMove(char[][] board, Coordinate move, Player player) {
@@ -119,6 +119,7 @@ public class Game {
         char[][] board = new char[width][];
 
         for (int i = 0; i < width; i++) {
+            board[i] = new char[height];
             for (int j = 0; j < height; j++) {
                 board[i][j] = 'E';
             }
