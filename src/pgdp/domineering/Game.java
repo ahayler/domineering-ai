@@ -1,5 +1,8 @@
 package pgdp.domineering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Game {
 
     private AI verticalAI;
@@ -72,8 +75,27 @@ public class Game {
         else c = 'H';
 
         board[move.getX()][move.getY()] = c;
-        Coordinate secondCoordinate = getSecondCoordiante(move, player);
+        Coordinate secondCoordinate = getSecondCoordinate(move, player);
         board[secondCoordinate.getX()][secondCoordinate.getY()] = c;
+    }
+
+    public static char[][] makeMoveAndCopyBoard(char[][] boardToCopy, Coordinate move, Player player) {
+        // Note: Always check if a move is possible before making a move
+
+        // copy the board first
+        char[][] board = new char[boardToCopy.length][];
+        for(int i = 0; i < boardToCopy.length; i++)
+            board[i] = boardToCopy[i].clone();
+
+        char c;
+        if (player == Player.V) c = 'V';
+        else c = 'H';
+
+        board[move.getX()][move.getY()] = c;
+        Coordinate secondCoordinate = getSecondCoordinate(move, player);
+        board[secondCoordinate.getX()][secondCoordinate.getY()] = c;
+
+        return board;
     }
 
     public static boolean movePossible(char[][] board, Coordinate move, Player player) {
@@ -86,7 +108,7 @@ public class Game {
             return false;
 
         // check if second coordinate is out of bounds or already taken
-        Coordinate secondCoordinate = getSecondCoordiante(move, player);
+        Coordinate secondCoordinate = getSecondCoordinate(move, player);
         if (secondCoordinate.getX() >= width || secondCoordinate.getY() >= height || secondCoordinate.getX() < 0
                 || secondCoordinate.getY() < 0 || board[secondCoordinate.getX()][secondCoordinate.getY()] != 'E')
             return false;
@@ -107,7 +129,22 @@ public class Game {
         return count;
     }
 
-    public static Coordinate getSecondCoordiante(Coordinate move, Player player) {
+    public static Coordinate[] getAllPossibleMoves(char[][] board, Player player) {
+        int width = board.length;
+        int height = board[0].length;
+        List<Coordinate> list = new ArrayList<Coordinate>();
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (movePossible(board, new Coordinate(i, j), player)) list.add(new Coordinate(i, j));
+            }
+        }
+
+        return list.toArray(new Coordinate[0]);
+    }
+
+
+    public static Coordinate getSecondCoordinate(Coordinate move, Player player) {
         // get the second coordinate
         Coordinate secondCoordinate;
         if (player == Player.V)
