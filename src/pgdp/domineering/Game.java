@@ -46,7 +46,7 @@ public class Game {
                 if (movePossible(board, moveHorizontal, playerHorizontal))
                     makeMove(board, moveHorizontal, playerHorizontal);
                 else {
-                    this.winner = horizontalAI;
+                    this.winner = verticalAI;
                     return;
                 }
 
