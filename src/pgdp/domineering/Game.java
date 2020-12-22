@@ -39,6 +39,8 @@ public class Game {
                 return;
             }
 
+            GameVisualizer.printBoard(board);
+
             // second player plays horizontally
             if (countPossibleMoves(board, playerHorizontal) > 0) {
                 Coordinate moveHorizontal = horizontalAI.playMove(board, playerHorizontal, mode);
@@ -54,6 +56,8 @@ public class Game {
                 this.winner = verticalAI;
                 return;
             }
+
+            GameVisualizer.printBoard(board);
         }
     }
 
@@ -78,13 +82,13 @@ public class Game {
 
         // check if first coordinate is out of bounds or already taken
         if (move.getX() >= width || move.getY() >= height || move.getX() < 0 || move.getY() < 0 ||
-                board[move.getY()][move.getY()] != 'E')
+                board[move.getX()][move.getY()] != 'E')
             return false;
 
         // check if second coordinate is out of bounds or already taken
         Coordinate secondCoordinate = getSecondCoordiante(move, player);
         if (secondCoordinate.getX() >= width || secondCoordinate.getY() >= height || secondCoordinate.getX() < 0
-                || secondCoordinate.getY() < 0 || board[secondCoordinate.getY()][secondCoordinate.getY()] != 'E')
+                || secondCoordinate.getY() < 0 || board[secondCoordinate.getX()][secondCoordinate.getY()] != 'E')
             return false;
 
         return true;

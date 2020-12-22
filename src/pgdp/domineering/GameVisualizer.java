@@ -42,7 +42,7 @@ public class GameVisualizer {
         }
     }
 
-    private static void printBoard(char[][] board) {
+    public static void printBoard(char[][] board) {
         System.out.println("  0 1 2 3 4 5 6 7 8 9 a b c");
         System.out.println(" ┏━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┓");
         for (int y = 0; y < board.length; y++) {
