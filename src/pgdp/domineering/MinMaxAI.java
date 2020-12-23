@@ -186,12 +186,12 @@ public class MinMaxAI extends AI {
             opponentWins = true;
         } else {
             // Game has not ended return the normal static evaluation
-            /*return new Tuple<Boolean, int[]>(false,
-                    new int[]{realMovesVertical - realMovesHorizontal, safeMovesVertical - safeMovesHorizontal});*/
             return new Tuple<Boolean, int[]>(false,
+                    new int[]{realMovesVertical - realMovesHorizontal, safeMovesVertical - safeMovesHorizontal});
+/*            return new Tuple<Boolean, int[]>(false,
                     new int[]{Game.getMobility(board, Player.V) + realMovesVertical
                             - Game.getMobility(board, Player.H) - realMovesHorizontal,
-                            safeMovesVertical - safeMovesHorizontal});
+                            safeMovesVertical - safeMovesHorizontal});*/
         }
 
         // if there is a winner return the right thing
