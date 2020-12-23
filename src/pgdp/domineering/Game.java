@@ -26,8 +26,10 @@ public class Game {
 
 
         while (true) {
+            GameVisualizer.printBoard(board);
+
             // First player plays vertically
-            if (countPossibleMoves(board, playerVertical) > 0) {
+            if (getMobility(board, playerVertical) > 0) {
                 Coordinate moveVertical = verticalAI.playMove(board, playerVertical, mode);
 
                 if (movePossible(board, moveVertical, playerVertical))
@@ -45,7 +47,7 @@ public class Game {
             GameVisualizer.printBoard(board);
 
             // second player plays horizontally
-            if (countPossibleMoves(board, playerHorizontal) > 0) {
+            if (getMobility(board, playerHorizontal) > 0) {
                 Coordinate moveHorizontal = horizontalAI.playMove(board, playerHorizontal, mode);
 
                 if (movePossible(board, moveHorizontal, playerHorizontal))
@@ -59,8 +61,6 @@ public class Game {
                 this.winner = verticalAI;
                 return;
             }
-
-            GameVisualizer.printBoard(board);
         }
     }
 
@@ -116,7 +116,8 @@ public class Game {
         return true;
     }
 
-    public static int countPossibleMoves(char[][] board, Player player) {
+    public static int getMobility(char[][] board, Player player) {
+        // Mobility: The number of distinct moves that a player can make in a position
         int width = board.length;
         int height = board[0].length;
         int count = 0;
@@ -127,6 +128,135 @@ public class Game {
             }
         }
         return count;
+    }
+
+    public static int getRealMoves(char[][] board, Player player) {
+        // Real Moves: The maximum number of moves that a player can make in a position
+        int width = board.length;
+        int height = board[0].length;
+        int moves_count = 0;
+
+        // order of the loops changes depending on the player
+        if (player == Player.V) {
+            // for the vertical player we iterate over the columns
+            for (int i = 0; i < width; i++) {
+                int tile_count = 0;
+                // iterate through all the tiles in the column
+                for (int j = 0; j < height; j++) {
+                    if (board[i][j] == 'E')
+                        tile_count++;
+                    else {
+                        // if the chunk has ended add to moves
+                        moves_count += tile_count / 2;
+                        tile_count = 0;
+                    }
+                }
+                moves_count += tile_count / 2;
+            }
+        } else {
+            // for the horizontal player we iterate over the rows
+            for (int j = 0; j < height; j++) {
+                int tile_count = 0;
+                // iterate through all the tiles in the row
+                for (int i = 0; i < width; i++) {
+                    if (board[i][j] == 'E')
+                        tile_count++;
+                    else {
+                        // if the chunk has ended add to moves
+                        moves_count += tile_count / 2;
+                        tile_count = 0;
+                    }
+                }
+                moves_count += tile_count / 2;
+            }
+        }
+        return moves_count;
+    }
+
+    public static int getSafeMoves (char[][] board, Player player) {
+       /*
+       The maximum number of moves that a player can make from a given position in the remaining part of the game,
+       irrespective of the moves that the opponent will make.
+
+       Implementation like real moves but with an additonal check if the a tile can't be touched by the other player
+        */
+        int width = board.length;
+        int height = board[0].length;
+        int moves_count = 0;
+
+        // order of the loops changes depending on the player
+        if (player == Player.V) {
+            // for the vertical player we iterate over the columns
+            for (int i = 0; i < width; i++) {
+                int tile_count = 0;
+                // iterate through all the tiles in the column
+                for (int j = 0; j < height; j++) {
+                    if (isSafeTile(board, new Coordinate(i, j), player))
+                        tile_count++;
+                    else {
+                        // if the chunk has ended add to moves
+                        moves_count += tile_count / 2;
+                        tile_count = 0;
+                    }
+                }
+                moves_count += tile_count / 2;
+            }
+        } else {
+            // for the horizontal player we iterate over the rows
+            for (int j = 0; j < height; j++) {
+                int tile_count = 0;
+                // iterate through all the tiles in the row
+                for (int i = 0; i < width; i++) {
+                    if (isSafeTile(board, new Coordinate(i, j), player))
+                        tile_count++;
+                    else {
+                        // if the chunk has ended add to moves
+                        moves_count += tile_count / 2;
+                        tile_count = 0;
+                    }
+                }
+                moves_count += tile_count / 2;
+            }
+        }
+        return moves_count;
+    }
+
+    public static boolean isSafeTile(char[][] board, Coordinate tile, Player player) {
+        /*
+        Checks if a tile can't be touched by the other player.
+        (if the two adjacent on the other players axis are blocked)
+        */
+        int width = board.length;
+        int height = board[0].length;
+
+        // check that the tile is empty
+        if (board[tile.getX()][tile.getY()] != 'E')
+            return false;
+
+        if (player == Player.V) {
+            // then check the left tile
+            if (tile.getX() - 1 >= 0) {
+                if(board[tile.getX() - 1][tile.getY()] == 'E')
+                    return false;
+            }
+            // and the right tile
+            if(tile.getX() + 1 <= width - 1) {
+                if(board[tile.getX() + 1][tile.getY()] == 'E')
+                    return false;
+            }
+        } else {
+            // check top tile
+            if(tile.getY() - 1 >= 0) {
+                if(board[tile.getX()][tile.getY() - 1] == 'E')
+                    return false;
+            }
+            // check bottom tile
+            if(tile.getY() + 1 <= height - 1) {
+                if(board[tile.getX()][tile.getY() + 1] == 'E')
+                    return false;
+            }
+        }
+        return true;
     }
 
     public static Coordinate[] getAllPossibleMoves(char[][] board, Player player) {
