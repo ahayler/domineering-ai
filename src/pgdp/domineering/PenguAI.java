@@ -6,8 +6,9 @@ public class PenguAI extends AI {
     @Override
     public synchronized Coordinate playMove(char[][] board, Player player, Mode mode) {
         /*return MinMaxAI.getMove(board, player, 1);*/
+
         /*return AdvancedCostFunctionAI.getMove(board, player);*/
+
         return SimpleCostFunctionAI.getMove(board, player);
-        /*return MinMaxAI.getMove(board, player, 1);*/
     }
 }
