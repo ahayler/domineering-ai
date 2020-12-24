@@ -3,7 +3,7 @@ package pgdp.domineering;
 public class MinMaxAI extends AI {
     @Override
     public Coordinate playMove(char[][] board, Player player, Mode mode) {
-        return getMove(board, player, 2);
+        return getMove(board, player, 1);
     }
 
     public static Coordinate getMove(char[][] board, Player player, int depth) {
@@ -197,10 +197,13 @@ public class MinMaxAI extends AI {
             // Game has not ended return the normal static evaluation
 /*            return new Tuple<Boolean, int[]>(false,
                     new int[]{realMovesVertical - realMovesHorizontal, safeMovesVertical - safeMovesHorizontal});*/
-            return new Tuple<Boolean, int[]>(false,
+/*            return new Tuple<Boolean, int[]>(false,
                     new int[]{verticalMobility + realMovesVertical
                             - horizontalMobility - realMovesHorizontal,
-                            safeMovesVertical - safeMovesHorizontal});
+                            safeMovesVertical - safeMovesHorizontal});*/
+            return new Tuple<Boolean, int[]>(false,
+                    new int[]{safeMovesVertical + realMovesVertical - safeMovesHorizontal - realMovesHorizontal,
+                            verticalMobility - horizontalMobility});
         }
 
         // if there is a winner return the right thing
