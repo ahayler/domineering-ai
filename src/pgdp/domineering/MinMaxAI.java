@@ -154,28 +154,37 @@ public class MinMaxAI extends AI {
         int opponentSafeMoves = Game.getSafeMoves(board, opponent);
         int playerRealMoves = Game.getRealMoves(board, player);
         int opponentRealMoves = Game.getRealMoves(board, opponent);
+        int playerMobility = Game.getMobility(board, player);
+        int opponentMobility = Game.getMobility(board, opponent);
 
         int realMovesVertical;
         int safeMovesVertical;
         int realMovesHorizontal;
         int safeMovesHorizontal;
+        int verticalMobility;
+        int horizontalMobility;
 
         if (player == Player.V) {
             realMovesVertical = playerRealMoves;
             safeMovesVertical = playerSafeMoves;
             realMovesHorizontal = opponentRealMoves;
             safeMovesHorizontal = opponentSafeMoves;
+            verticalMobility = playerMobility;
+            horizontalMobility = opponentMobility;
+
         } else {
             realMovesVertical = opponentRealMoves;
             safeMovesVertical = opponentSafeMoves;
             realMovesHorizontal = playerRealMoves;
             safeMovesHorizontal = playerSafeMoves;
+            verticalMobility = opponentMobility;
+            horizontalMobility = playerMobility;
         }
 
         // If the opponent has no turns left: we win
-        if (Game.getMobility(board, opponent) == 0) {
+        if (opponentMobility == 0) {
             playerWins = true;
-        } else if (Game.getMobility(board, player) == 0) {
+        } else if (playerMobility == 0) {
             // If the the opponent has at least one turn and we have none: we lose
             opponentWins = true;
         } else  if(playerSafeMoves >= opponentRealMoves)
@@ -189,8 +198,8 @@ public class MinMaxAI extends AI {
 /*            return new Tuple<Boolean, int[]>(false,
                     new int[]{realMovesVertical - realMovesHorizontal, safeMovesVertical - safeMovesHorizontal});*/
             return new Tuple<Boolean, int[]>(false,
-                    new int[]{Game.getMobility(board, Player.V) + realMovesVertical
-                            - Game.getMobility(board, Player.H) - realMovesHorizontal,
+                    new int[]{verticalMobility + realMovesVertical
+                            - horizontalMobility - realMovesHorizontal,
                             safeMovesVertical - safeMovesHorizontal});
         }
 
