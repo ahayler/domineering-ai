@@ -1,5 +1,6 @@
 package pgdp.domineering;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class Game {
 
         while (true) {
             GameVisualizer.printBoard(board);
+            System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
+                    (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
 
             // First player plays vertically
             if (getMobility(board, playerVertical) > 0) {
@@ -45,6 +48,8 @@ public class Game {
             }
 
             GameVisualizer.printBoard(board);
+            System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
+                    (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
 
             // second player plays horizontally
             if (getMobility(board, playerHorizontal) > 0) {

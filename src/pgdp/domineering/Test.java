@@ -6,7 +6,7 @@ public class Test {
     }
 
     public static void testSimpleGameStructure() {
-        Game game = new Game(new HumanPlayer(), new MinMaxAI(), Mode.EASY);
+        Game game = new Game(new SimpleCostFunctionAI(), new MinMaxAI(), Mode.EASY);
         game.runGame();
         System.out.println(game.getWinner());
     }
