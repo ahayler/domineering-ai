@@ -280,6 +280,10 @@ public class Game {
         return list.toArray(new Coordinate[0]);
     }
 
+    public static boolean isSafeMove() {
+        return false;
+    }
+
 
     public static Coordinate getSecondCoordinate(Coordinate move, Player player) {
         // get the second coordinate
