@@ -1,4 +1,7 @@
-package pgdp.domineering;
+package pgdp.domineering.ai;
+
+import pgdp.domineering.*;
+import pgdp.domineering.ai.AI;
 
 public class RandomAI extends AI {
     @Override

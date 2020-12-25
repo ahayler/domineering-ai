@@ -1,6 +1,8 @@
 package pgdp.domineering;
 
-import java.awt.*;
+import pgdp.domineering.ai.AI;
+
+import java.awt.desktop.ScreenSleepEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class Game {
 
         while (true) {
             GameVisualizer.printBoard(board);
+            System.out.println(BoardConverter.boardToString(board));
             System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
                     (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
 
@@ -48,8 +51,10 @@ public class Game {
             }
 
             GameVisualizer.printBoard(board);
+            System.out.println(BoardConverter.boardToString(board));
             System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
                     (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
+
 
             // second player plays horizontally
             if (getMobility(board, playerHorizontal) > 0) {

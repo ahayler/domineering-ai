@@ -1,4 +1,10 @@
-package pgdp.domineering;
+package pgdp.domineering.ai;
+
+import pgdp.domineering.Coordinate;
+import pgdp.domineering.Game;
+import pgdp.domineering.Mode;
+import pgdp.domineering.Player;
+import pgdp.domineering.ai.AI;
 
 public class SimpleCostFunctionAI extends AI {
 
@@ -16,7 +22,7 @@ public class SimpleCostFunctionAI extends AI {
         Coordinate bestMove = null;
 
         for(int i = 0; i < movesArray.length; i++) {
-            int cost = SimpleCostFunction(board, movesArray[i], player);
+            int cost = simpleCostFunction(board, movesArray[i], player);
             if (cost < min) {
                 min = cost;
                 bestMove = movesArray[i];
@@ -25,7 +31,7 @@ public class SimpleCostFunctionAI extends AI {
         return bestMove;
     }
 
-    private static int SimpleCostFunction(char[][] board, Coordinate move, Player player) {
+    private static int simpleCostFunction(char[][] board, Coordinate move, Player player) {
         // get board after move
         board = Game.makeMoveAndCopyBoard(board, move, player);
 

@@ -1,6 +1,10 @@
-package pgdp.domineering;
+package pgdp.domineering.ai;
 
-import javax.swing.*;
+import pgdp.domineering.Coordinate;
+import pgdp.domineering.Game;
+import pgdp.domineering.Mode;
+import pgdp.domineering.Player;
+import pgdp.domineering.ai.AI;
 
 public class AdvancedCostFunctionAI extends AI {
     @Override
