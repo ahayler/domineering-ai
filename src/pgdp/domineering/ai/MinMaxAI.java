@@ -7,23 +7,25 @@ import pgdp.domineering.evaluation_function.EvaluationFunction;
 public class MinMaxAI extends AI {
     private int depth;
     private EvaluationFunction evaluationFunction;
+    private boolean useSafeMovePruning;
 
-    public MinMaxAI(int depth, EvaluationFunction evaluationFunction) {
+
+    public MinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
+        this.useSafeMovePruning = useSafeMovePruning;
     }
 
     @Override
     public Coordinate playMove(char[][] board, Player player, Mode mode) {
-        return getMove(board, player, depth, evaluationFunction);
+        return getMove(board, player, depth);
     }
 
-    public static Coordinate getMove(char[][] board, Player player, int depth, EvaluationFunction evaluationFunction) {
-        return minMaxHead(board, depth, player, evaluationFunction);
+    public Coordinate getMove(char[][] board, Player player, int depth) {
+        return minMaxHead(board, depth, player);
     }
 
-    private static Coordinate minMaxHead(char[][] board, int depth, Player player,
-                                         EvaluationFunction evaluationFunction) {
+    private Coordinate minMaxHead(char[][] board, int depth, Player player) {
         // the head is very similar to mixMax itself but it returns the coordinate.
 
 
@@ -41,7 +43,7 @@ public class MinMaxAI extends AI {
             Coordinate bestMove = null;
             for (int i = 0; i < movesArray.length; i++) {
                 int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], player),
-                        depth - 1, Player.H, evaluationFunction);
+                        depth - 1, Player.H);
 
                 // max(evaluation, best move)
                 if (evaluation[0] == 1000) {
@@ -65,7 +67,7 @@ public class MinMaxAI extends AI {
 
             for (int i = 0; i < movesArray.length; i++) {
                 int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], player),
-                        depth - 1, Player.V, evaluationFunction);
+                        depth - 1, Player.V);
 
                 // min(eval, best move)
                 if (evaluation[0] == -1000) {
@@ -85,7 +87,7 @@ public class MinMaxAI extends AI {
 
     }
 
-    private static int[] minMax(char[][] board, int depth, Player player, EvaluationFunction evaluationFunction) {
+    private int[] minMax(char[][] board, int depth, Player player) {
         /* The vertical player maximizes and horizontal minimizes */
 
 
@@ -93,9 +95,10 @@ public class MinMaxAI extends AI {
         Player opponent;
         if (player == Player.V) opponent = Player.H;
         else opponent = Player.V;
-        // Note it is important to call the evaluation with the opponent as he has made the last move
-        Tuple<Boolean, int[]> boardEvaluation = checkIfGameEndedAndComputeStaticEvaluation(board, opponent,
-                evaluationFunction);
+
+
+        // Note: It is important to call the evaluation with the opponent as he has made the last move
+        Tuple<Boolean, int[]> boardEvaluation = checkIfGameEndedAndComputeStaticEvaluation(board, opponent);
 
         if (boardEvaluation.x || depth == 0) {
             // game has ended or max search depth has been reached
@@ -106,11 +109,11 @@ public class MinMaxAI extends AI {
 
         // The vertical player is the maximizing player
         if (player == Player.V)
-            return max(board, depth, evaluationFunction);
-        else return min(board, depth, evaluationFunction);
+            return max(board, depth);
+        else return min(board, depth);
     }
 
-    private static int[] max(char[][] board, int depth, EvaluationFunction evaluationFunction) {
+    private int[] max(char[][] board, int depth) {
         // maximize the value of the Static Evaluation
 
         // first get all possible moves
@@ -121,7 +124,7 @@ public class MinMaxAI extends AI {
 
         for (int i = 0; i < movesArray.length; i++) {
             int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], Player.V),
-                    depth - 1, Player.H, evaluationFunction);
+                    depth - 1, Player.H);
 
             if (evaluation[0] == 1000) {
                 // if a winning move is found end search
@@ -136,7 +139,7 @@ public class MinMaxAI extends AI {
         return new int[]{maxRealMovesDiff, maxSafeMoveDiff};
     }
 
-    private static int[] min(char[][] board, int depth, EvaluationFunction evaluationFunction) {
+    private int[] min(char[][] board, int depth) {
         // minimize the value of the Static Evaluation
 
         // first get all possible moves
@@ -147,7 +150,7 @@ public class MinMaxAI extends AI {
 
         for (int i = 0; i < movesArray.length; i++) {
             int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], Player.H),
-                    depth - 1, Player.V, evaluationFunction);
+                    depth - 1, Player.V);
 
             if (evaluation[0] == -1000) {
                 // if a winning move is found end search
@@ -162,8 +165,8 @@ public class MinMaxAI extends AI {
         return new int[]{minRealMovesDiff, minSafeMoveDiff};
     }
 
-    private static Tuple<Boolean, int[]> checkIfGameEndedAndComputeStaticEvaluation
-            (char[][] board, Player player, EvaluationFunction evaluationFunction) {
+    private Tuple<Boolean, int[]> checkIfGameEndedAndComputeStaticEvaluation
+            (char[][] board, Player player) {
         /*
         Checks if the game has ended. The player is needed to
         see who JUST made a move.
