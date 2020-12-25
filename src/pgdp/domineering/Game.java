@@ -24,8 +24,11 @@ public class Game {
         Player playerVertical = Player.V;
         Player playerHorizontal = Player.H;
 
-
+        int turn = 0;
         while (true) {
+            System.out.println("Turn " + turn);
+            turn++;
+
             GameVisualizer.printBoard(board);
             System.out.println(BoardConverter.boardToString(board));
             System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
@@ -51,6 +54,7 @@ public class Game {
             System.out.println(BoardConverter.boardToString(board));
             System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
                     (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
+            System.out.println();
 
 
             // second player plays horizontally
@@ -247,19 +251,19 @@ public class Game {
                     return false;
             }
             // and the right tile
-            if(tile.getX() + 1 <= width - 1) {
-                if(board[tile.getX() + 1][tile.getY()] == 'E')
+            if (tile.getX() + 1 <= width - 1) {
+                if (board[tile.getX() + 1][tile.getY()] == 'E')
                     return false;
             }
         } else {
             // check top tile
-            if(tile.getY() - 1 >= 0) {
+            if (tile.getY() - 1 >= 0) {
                 if(board[tile.getX()][tile.getY() - 1] == 'E')
                     return false;
             }
             // check bottom tile
             if(tile.getY() + 1 <= height - 1) {
-                if(board[tile.getX()][tile.getY() + 1] == 'E')
+                if (board[tile.getX()][tile.getY() + 1] == 'E')
                     return false;
             }
         }
@@ -280,8 +284,19 @@ public class Game {
         return list.toArray(new Coordinate[0]);
     }
 
-    public static boolean isSafeMove() {
-        return false;
+    public static boolean isSafeMove(char[][] board, Coordinate move, Player player) {
+        /*
+        This function is mainly used for safe move pruning.
+        We assume that any move proposed is at least a move within the bounds of the board.
+        */
+        if (player == Player.V) {
+            return isSafeTile(board, move, player) &&
+                    isSafeTile(board, new Coordinate(move.getX(), move.getY() + 1), player);
+        }
+        else {
+            return isSafeTile(board, move, player) &&
+                    isSafeTile(board, new Coordinate(move.getX() + 1, move.getY()), player);
+        }
     }
 
 
