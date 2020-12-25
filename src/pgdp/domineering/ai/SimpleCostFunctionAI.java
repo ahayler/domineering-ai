@@ -4,7 +4,7 @@ import pgdp.domineering.Coordinate;
 import pgdp.domineering.Game;
 import pgdp.domineering.Mode;
 import pgdp.domineering.Player;
-import pgdp.domineering.ai.AI;
+import pgdp.domineering.AI;
 
 public class SimpleCostFunctionAI extends AI {
 

@@ -1,10 +1,8 @@
 package pgdp.domineering.ai;
 
 import pgdp.domineering.*;
-import pgdp.domineering.ai.AI;
+import pgdp.domineering.AI;
 import pgdp.domineering.evaluation_function.EvaluationFunction;
-import pgdp.domineering.evaluation_function.RealMovesEvaluationFunction;
-import pgdp.domineering.evaluation_function.SimpleMobilityEvaluationFunction;
 
 public class MinMaxAI extends AI {
     private int depth;

@@ -1,7 +1,7 @@
 package pgdp.domineering.ai;
 
 import pgdp.domineering.*;
-import pgdp.domineering.ai.AI;
+import pgdp.domineering.AI;
 
 public class AlphaBetaMinMaxAI extends AI {
     @Override

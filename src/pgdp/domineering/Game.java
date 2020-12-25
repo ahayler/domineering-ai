@@ -1,8 +1,5 @@
 package pgdp.domineering;
 
-import pgdp.domineering.ai.AI;
-
-import java.awt.desktop.ScreenSleepEvent;
 import java.util.ArrayList;
 import java.util.List;
 

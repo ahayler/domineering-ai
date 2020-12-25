@@ -1,4 +1,4 @@
-package pgdp.domineering.ai;
+package pgdp.domineering;
 
 import pgdp.domineering.Coordinate;
 import pgdp.domineering.Mode;

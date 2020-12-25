@@ -1,13 +1,8 @@
 package pgdp.domineering;
 
-import pgdp.domineering.Coordinate;
-import pgdp.domineering.Mode;
-import pgdp.domineering.Player;
-import pgdp.domineering.ai.AI;
 import pgdp.domineering.ai.MinMaxAI;
 import pgdp.domineering.evaluation_function.RealAndSafeMovesEvaluationFunction;
 import pgdp.domineering.evaluation_function.RealMovesEvaluationFunction;
-import pgdp.domineering.evaluation_function.SimpleMobilityEvaluationFunction;
 
 public class PenguAI extends AI {
     public static final boolean PARTICIPATING = false;
