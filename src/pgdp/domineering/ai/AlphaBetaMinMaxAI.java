@@ -4,6 +4,7 @@ import pgdp.domineering.*;
 import pgdp.domineering.AI;
 
 public class AlphaBetaMinMaxAI extends AI {
+
     @Override
     public Coordinate playMove(char[][] board, Player player, Mode mode) {
         return getMove(board, player, 3);
