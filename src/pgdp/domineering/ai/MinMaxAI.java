@@ -30,6 +30,7 @@ public class MinMaxAI extends AI {
     public Coordinate playMove(char[][] board, Player player, Mode mode) {
         if (increaseDepth && turnNumber >= increaseDepthTurn)
             return getMove(board, player, depth + 1);
+        turnNumber++;
         return getMove(board, player, depth);
     }
 
