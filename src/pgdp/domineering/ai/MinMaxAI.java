@@ -8,31 +8,16 @@ public class MinMaxAI extends AI {
     private final int depth;
     private final EvaluationFunction evaluationFunction;
     private final boolean useSafeMovePruning;
-    private final boolean increaseDepth;
-    private final int increaseDepthTurn;
-
-    private int turnNumber;
 
 
-
-    public MinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning, boolean increaseDepth,
-                    int increaseDepthTurn) {
+    public MinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
         this.useSafeMovePruning = useSafeMovePruning;
-
-        this.increaseDepth = increaseDepth;
-        this.increaseDepthTurn = increaseDepthTurn;
-        this.turnNumber = 0;
     }
 
     @Override
     public Coordinate playMove(char[][] board, Player player, Mode mode) {
-
-        if (increaseDepth && turnNumber >= increaseDepthTurn) {
-            return getMove(board, player, depth + 1);
-        }
-        turnNumber++;
         return getMove(board, player, depth);
     }
 
