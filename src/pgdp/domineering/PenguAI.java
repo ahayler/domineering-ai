@@ -9,7 +9,7 @@ public class PenguAI extends AI {
 
     @Override
     public synchronized Coordinate playMove(char[][] board, Player player, Mode mode) {
-        if (mode == Mode.HARD)
+        if (mode == Mode.HARD || mode == Mode.MEDIUM)
             return MinMaxAI.getMove(board, player, 2, new RealAndSafeMovesEvaluationFunction());
 
         return MinMaxAI.getMove(board, player, 1, new RealMovesEvaluationFunction());
