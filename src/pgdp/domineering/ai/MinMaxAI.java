@@ -224,7 +224,7 @@ public class MinMaxAI extends AI {
         return new int[]{minRealMovesDiff, minSafeMoveDiff};
     }
 
-    private Tuple<Boolean, int[]> checkIfGameEndedAndComputeStaticEvaluation
+    public Tuple<Boolean, int[]> checkIfGameEndedAndComputeStaticEvaluation
             (char[][] board, Player player, boolean lastMoveWasASafeMove) {
         /*
         Checks if the game has ended. The player is needed to
@@ -254,8 +254,8 @@ public class MinMaxAI extends AI {
         int verticalMobility;
         int horizontalMobility;
 
-        int verticalSafeMovePossibilities = Game.getSafeMovePossibilities(board, player);
-        int horizontalSafeMovePossibilities = Game.getSafeMovePossibilities(board, player);
+        int verticalSafeMovePossibilities = Game.getSafeMovePossibilities(board, Player.V);
+        int horizontalSafeMovePossibilities = Game.getSafeMovePossibilities(board, Player.H);
 
         if (player == Player.V) {
             realMovesVertical = playerRealMoves;
