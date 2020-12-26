@@ -6,6 +6,7 @@ import pgdp.domineering.evaluation_function.RealMovesEvaluationFunction;
 
 public class PenguAI extends AI {
     /*
+
     */
     public static final boolean PARTICIPATING = false;
 
