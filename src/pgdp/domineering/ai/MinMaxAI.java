@@ -13,6 +13,8 @@ public class MinMaxAI extends AI {
     private int increaseDepthTurn;
     private int turnNumber;
 
+    private boolean useAlphaBeta;
+
 
     public MinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
                     boolean increaseDepth, int increaseDepthTurn) {
