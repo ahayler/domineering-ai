@@ -9,10 +9,10 @@ public class SimulateGame {
     }
 
     public static void testSimpleGameStructure() {
-        Game game = new Game(new MinMaxAI(2, new RealAndSafeMovesEvaluationFunction(), false,
-                false, 0),
+        Game game = new Game(new MinMaxAI(3, new RealAndSafeMovesEvaluationFunction(), true,
+                false, 5, true),
                 new MinMaxAI(2, new RealAndSafeMovesEvaluationFunction(), false,
-                        false, 0), Mode.EASY);
+                        false, 0, false), Mode.EASY);
         game.runGame();
         System.out.println(game.getWinner());
     }

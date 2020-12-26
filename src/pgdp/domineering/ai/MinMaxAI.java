@@ -17,13 +17,15 @@ public class MinMaxAI extends AI {
 
 
     public MinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
-                    boolean increaseDepth, int increaseDepthTurn) {
+                    boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
         this.useSafeMovePruning = useSafeMovePruning;
 
         this.increaseDepth = increaseDepth;
         this.increaseDepthTurn = increaseDepthTurn;
+
+        this.useAlphaBeta = useAlphaBeta;
 
         this.turnNumber = 0;
     }
@@ -42,7 +44,8 @@ public class MinMaxAI extends AI {
 
     public Coordinate minMaxHead(char[][] board, int depth, Player player) {
         // the head is very similar to mixMax itself but it returns the coordinate.
-
+        int alpha[] = new int[]{-2000, -2000};
+        int beta[] = new int[]{2000, 2000};
 
         // first get all possible moves
         Coordinate[] movesArray = Game.getAllPossibleMoves(board, player);
@@ -58,7 +61,7 @@ public class MinMaxAI extends AI {
             Coordinate bestMove = null;
             for (int i = 0; i < movesArray.length; i++) {
                 int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], player),
-                        depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], player));
+                        depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], player), alpha, beta);
 
                 // max(evaluation, best move)
                 if (evaluation[0] == 1000) {
@@ -71,6 +74,15 @@ public class MinMaxAI extends AI {
                     maxSafeMoveDiff = evaluation[1];
                     bestMove = movesArray[i];
                 }
+
+                if (useAlphaBeta) {
+                    // alpha = max(alpha, eval)
+                    if (evaluation[0] > alpha[0] || (evaluation[0] == alpha[0] && evaluation[1] > alpha[1])) {
+                        alpha = evaluation;
+                    }
+
+                    // if beta <= alpha: break ==> can't happen here
+                }
             }
             return bestMove;
 
@@ -82,7 +94,7 @@ public class MinMaxAI extends AI {
 
             for (int i = 0; i < movesArray.length; i++) {
                 int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], player),
-                        depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], player));
+                        depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], player), alpha, beta);
 
                 // min(eval, best move)
                 if (evaluation[0] == -1000) {
@@ -94,6 +106,15 @@ public class MinMaxAI extends AI {
                     minRealMovesDiff = evaluation[0];
                     minSafeMoveDiff = evaluation[1];
                     bestMove = movesArray[i];
+
+                    if (useAlphaBeta) {
+                        // alpha = max(alpha, eval)
+                        if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < alpha[1])) {
+                            beta = evaluation;
+                        }
+
+                        // if beta <= alpha: break ==> can't happen here
+                    }
                 }
             }
             return bestMove;
@@ -102,7 +123,7 @@ public class MinMaxAI extends AI {
 
     }
 
-    public int[] minMax(char[][] board, int depth, Player player, boolean lastMoveWasASafeMove) {
+    public int[] minMax(char[][] board, int depth, Player player, boolean lastMoveWasASafeMove, int[] alpha, int[] beta) {
         /* The vertical player maximizes and horizontal minimizes */
 
 
@@ -125,11 +146,11 @@ public class MinMaxAI extends AI {
 
         // The vertical player is the maximizing player
         if (player == Player.V)
-            return max(board, depth);
-        else return min(board, depth);
+            return max(board, depth, alpha, beta);
+        else return min(board, depth, alpha, beta);
     }
 
-    public int[] max(char[][] board, int depth) {
+    public int[] max(char[][] board, int depth, int[] alpha, int[] beta) {
         // maximize the value of the Static Evaluation
 
         // first get all possible moves
@@ -140,7 +161,7 @@ public class MinMaxAI extends AI {
 
         for (int i = 0; i < movesArray.length; i++) {
             int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], Player.V),
-                    depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], Player.V));
+                    depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], Player.V), alpha, beta);
 
             if (evaluation[0] == 1000) {
                 // if a winning move is found end search
@@ -150,12 +171,23 @@ public class MinMaxAI extends AI {
                 // is new max
                 maxRealMovesDiff = evaluation[0];
                 maxSafeMoveDiff = evaluation[1];
+
+                if (useAlphaBeta) {
+                    // alpha = max(alpha, eval)
+                    if (evaluation[0] > alpha[0] || (evaluation[0] == alpha[0] && evaluation[1] > alpha[1])) {
+                        alpha = evaluation;
+                    }
+
+                    // if beta <= alpha: break
+                    if (beta[0] < alpha[0] || (beta[0] == alpha[0] && beta[1] <= alpha[1]))
+                        break;
+                }
             }
         }
         return new int[]{maxRealMovesDiff, maxSafeMoveDiff};
     }
 
-    public int[] min(char[][] board, int depth) {
+    public int[] min(char[][] board, int depth, int[] alpha, int[] beta) {
         // minimize the value of the Static Evaluation
 
         // first get all possible moves
@@ -166,7 +198,7 @@ public class MinMaxAI extends AI {
 
         for (int i = 0; i < movesArray.length; i++) {
             int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], Player.H),
-                    depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], Player.H));
+                    depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], Player.H), alpha, beta);
 
             if (evaluation[0] == -1000) {
                 // if a winning move is found end search
@@ -176,6 +208,17 @@ public class MinMaxAI extends AI {
                 // is new max
                 minRealMovesDiff = evaluation[0];
                 minSafeMoveDiff = evaluation[1];
+            }
+
+            if (useAlphaBeta) {
+                // alpha = max(alpha, eval)
+                if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < alpha[1])) {
+                    beta = evaluation;
+                }
+
+                // if beta <= alpha
+                if (beta[0] < alpha[0] || (beta[0] == alpha[0] && beta[1] <= alpha[1]))
+                    break;
             }
         }
         return new int[]{minRealMovesDiff, minSafeMoveDiff};
