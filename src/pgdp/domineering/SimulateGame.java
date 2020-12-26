@@ -1,6 +1,7 @@
 package pgdp.domineering;
 
 import pgdp.domineering.ai.MinMaxAI;
+import pgdp.domineering.evaluation_function.ExtendedRealAndSafeMovesEvaluationFunction;
 import pgdp.domineering.evaluation_function.RealAndSafeMovesEvaluationFunction;
 
 public class SimulateGame {
@@ -9,10 +10,10 @@ public class SimulateGame {
     }
 
     public static void testSimpleGameStructure() {
-        Game game = new Game(new MinMaxAI(3, new RealAndSafeMovesEvaluationFunction(), true,
-                true, 10, true),
-                new MinMaxAI(3, new RealAndSafeMovesEvaluationFunction(), true,
-                        false, 0, true), Mode.EASY);
+        Game game = new Game(new MinMaxAI(1, new RealAndSafeMovesEvaluationFunction(), false,
+                false, 10, false),
+                new MinMaxAI(1, new ExtendedRealAndSafeMovesEvaluationFunction(), false,
+                        false, 0, false), Mode.EASY);
         game.runGame();
         System.out.println(game.getWinner());
     }
