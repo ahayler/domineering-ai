@@ -189,7 +189,7 @@ public class Game {
        The maximum number of moves that a player can make from a given position in the remaining part of the game,
        irrespective of the moves that the opponent will make.
 
-       Implementation like real moves but with an additonal check if the a tile can't be touched by the other player
+       Implementation like real moves but with an additional check if the a tile can't be touched by the other player
         */
         int width = board.length;
         int height = board[0].length;
@@ -268,6 +268,139 @@ public class Game {
             }
         }
         return true;
+    }
+
+    public static int getSafeMovePossibilities(char[][] board, Player player) {
+        /*
+        The number of possibilities a player has to create a safe move in the next turn.
+        For simplicity we just count all moves (2*1 areas) that have a wall on one side but not on the other
+        */
+
+        int width = board.length;
+        int height = board[0].length;
+        int moves_count = 0;
+
+        // order of the loops changes depending on the player
+        if (player == Player.V) {
+            // for the vertical player we iterate over the columns
+            for (int i = 0; i < width; i++) {
+                int tile_count = 0;
+                int direction = 0;
+                // iterate through all the tiles in the column
+                for (int j = 0; j < height; j++) {
+
+                    Tuple<Boolean, Integer> evaluation = isPossibilityTile(board, new Coordinate(i, j), player);
+
+                    if(evaluation.x) {
+                        if (direction == 0) {
+                            direction = evaluation.y;
+                            tile_count++;
+                        } else if (direction == evaluation.y) {
+                            tile_count++;
+                        } else {
+                            // if the chunk has ended add to moves
+                            moves_count += tile_count / 2;
+                            tile_count = 0;
+                        }
+                    } else {
+                        // if the chunk has ended add to moves
+                        moves_count += tile_count / 2;
+                        tile_count = 0;
+                    }
+                }
+                moves_count += tile_count / 2;
+            }
+        } else {
+            // for the horizontal player we iterate over the rows
+            for (int j = 0; j < height; j++) {
+                int tile_count = 0;
+                int direction = 0;
+
+                // iterate through all the tiles in the row
+                for (int i = 0; i < width; i++) {
+                    Tuple<Boolean, Integer> evaluation = isPossibilityTile(board, new Coordinate(i, j), player);
+
+                    if(evaluation.x) {
+                        if (direction == 0) {
+                            direction = evaluation.y;
+                            tile_count++;
+                        } else if (direction == evaluation.y) {
+                            tile_count++;
+                        } else {
+                            // if the chunk has ended add to moves
+                            moves_count += tile_count / 2;
+                            tile_count = 0;
+                        }
+                    } else {
+                        // if the chunk has ended add to moves
+                        moves_count += tile_count / 2;
+                        tile_count = 0;
+                    }
+                }
+                moves_count += tile_count / 2;
+            }
+        }
+        return moves_count;
+    }
+
+    public static Tuple<Boolean, Integer> isPossibilityTile(char[][] board, Coordinate tile, Player player) {
+        /*
+        Returns whether a tile is a SafeMovePossibility-Tile and the direction of the wall.
+        1 is left/up and -1 right/down.
+        */
+        int direction = 0;
+        int width = board.length;
+        int height = board[0].length;
+
+        // check that the tile is empty
+        if (board[tile.getX()][tile.getY()] != 'E')
+            return new Tuple<Boolean, Integer>(false, 0);
+
+        int tileCount = 0;
+
+        if(player == Player.V) {
+            // then check the left tile
+            if (tile.getX() - 1 >= 0) {
+                if(board[tile.getX() - 1][tile.getY()] != 'E')
+                    tileCount++;
+                    direction = 1;
+            } else {
+            tileCount++;
+            direction = 1;
+            }
+            // and the right tile
+            if (tile.getX() + 1 <= width - 1) {
+                if (board[tile.getX() + 1][tile.getY()] != 'E') {
+                    tileCount++;
+                    direction = -1;
+                }
+            } else {
+                tileCount++;
+                direction = -1;
+            }
+        } else {
+            // check top tile
+            if (tile.getY() - 1 >= 0) {
+                if(board[tile.getX()][tile.getY() - 1] != 'E') {
+                    tileCount++;
+                    direction = 1;
+                }
+            } else {
+                tileCount++;
+                direction = 1;
+            }
+            // check bottom tile
+            if(tile.getY() + 1 <= height - 1) {
+                if (board[tile.getX()][tile.getY() + 1] != 'E') {
+                    tileCount++;
+                    direction = -1;
+                }
+            } else {
+                tileCount++;
+                direction = -1;
+            }
+        }
+        return new Tuple<Boolean, Integer>(tileCount == 1, direction);
     }
 
     public static Coordinate[] getAllPossibleMoves(char[][] board, Player player) {

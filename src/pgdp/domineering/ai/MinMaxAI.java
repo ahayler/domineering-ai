@@ -44,8 +44,8 @@ public class MinMaxAI extends AI {
 
     public Coordinate minMaxHead(char[][] board, int depth, Player player) {
         // the head is very similar to mixMax itself but it returns the coordinate.
-        int alpha[] = new int[]{-2000, -2000};
-        int beta[] = new int[]{2000, 2000};
+        int[] alpha = new int[]{-2000, -2000};
+        int[] beta = new int[]{2000, 2000};
 
         // first get all possible moves
         Coordinate[] movesArray = Game.getAllPossibleMoves(board, player);
@@ -254,6 +254,9 @@ public class MinMaxAI extends AI {
         int verticalMobility;
         int horizontalMobility;
 
+        int verticalSafeMovePossibilities = Game.getSafeMovePossibilities(board, player);
+        int horizontalSafeMovePossibilities = Game.getSafeMovePossibilities(board, player);
+
         if (player == Player.V) {
             realMovesVertical = playerRealMoves;
             safeMovesVertical = playerSafeMoves;
@@ -261,6 +264,7 @@ public class MinMaxAI extends AI {
             safeMovesHorizontal = opponentSafeMoves;
             verticalMobility = playerMobility;
             horizontalMobility = opponentMobility;
+
 
         } else {
             realMovesVertical = opponentRealMoves;
@@ -292,7 +296,8 @@ public class MinMaxAI extends AI {
         // calculate the normal Evaluation Function
         int[] evaluation = evaluationFunction.evaluate(
                 verticalMobility, horizontalMobility, realMovesVertical,
-                realMovesHorizontal, safeMovesVertical, safeMovesHorizontal);
+                realMovesHorizontal, safeMovesVertical, safeMovesHorizontal,
+                verticalSafeMovePossibilities, horizontalSafeMovePossibilities);
 
         /* if there is a winner modify the evaluation accordingly
         (the +/- is there so that the AI doesn't play like shit just because it has lost/won)
