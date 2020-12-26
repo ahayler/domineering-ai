@@ -7,4 +7,9 @@ public class SimpleMobilityEvaluationFunction extends EvaluationFunction {
                           int verticalSafeMovePossibilities, int horizontalSafeMovePossibilities) {
         return new int[]{verticalMobility - horizontalMobility, 0};
     }
+
+    @Override
+    public boolean mobilityNeeded() {
+        return true;
+    }
 }

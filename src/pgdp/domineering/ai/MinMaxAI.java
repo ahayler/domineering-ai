@@ -9,11 +9,11 @@ public class MinMaxAI extends AI {
     private final EvaluationFunction evaluationFunction;
     private final boolean useSafeMovePruning;
 
-    private boolean increaseDepth;
-    private int increaseDepthTurn;
+    private final boolean increaseDepth;
+    private final int increaseDepthTurn;
     private int turnNumber;
 
-    private boolean useAlphaBeta;
+    private final boolean useAlphaBeta;
 
 
     public MinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
@@ -244,8 +244,20 @@ public class MinMaxAI extends AI {
         int opponentSafeMoves = Game.getSafeMoves(board, opponent);
         int playerRealMoves = Game.getRealMoves(board, player);
         int opponentRealMoves = Game.getRealMoves(board, opponent);
-        int playerMobility = Game.getMobility(board, player);
-        int opponentMobility = Game.getMobility(board, opponent);
+
+
+        int playerMobility;
+        int opponentMobility;
+        if (evaluationFunction.mobilityNeeded()) {
+            playerMobility = Game.getMobility(board, player);
+            opponentMobility = Game.getMobility(board, opponent);
+        } else {
+            playerMobility = 0;
+            opponentMobility = 0;
+        }
+
+
+
 
         int realMovesVertical;
         int safeMovesVertical;
@@ -280,9 +292,9 @@ public class MinMaxAI extends AI {
         which of course ends the search and attaches a +1000 or -1000 to a certain move so it will be avoided.
          */
         // If the opponent has no turns left: we win
-        if (opponentMobility == 0) {
+        if (opponentRealMoves == 0) {
             playerWins = true;
-        } else if (playerMobility == 0) {
+        } else if (playerRealMoves == 0) {
             // If the the opponent has at least one turn and we have none: we lose
             opponentWins = true;
         } else if (playerSafeMoves >= opponentRealMoves) { // If our safe turns >= opponents real turns: we win

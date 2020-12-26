@@ -10,4 +10,9 @@ public class RealAndSafeMovesEvaluationFunction extends EvaluationFunction {
         return new int[]{verticalRealMoves + verticalSafeMoves - horizontalRealMoves - horizontalSafeMoves,
                 verticalMobility - horizontalMobility};
     }
+
+    @Override
+    public boolean mobilityNeeded() {
+        return true;
+    }
 }
