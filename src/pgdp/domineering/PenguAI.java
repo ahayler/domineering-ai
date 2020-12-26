@@ -9,6 +9,7 @@ public class PenguAI extends AI {
     * */
     public static final boolean PARTICIPATING = false;
 
+
     private AI EasyAI = new MinMaxAI(1, new RealAndSafeMovesEvaluationFunction(), false, false, 0, false);
     private AI MediumAI = new MinMaxAI(2, new RealAndSafeMovesEvaluationFunction(), true, true, 5, true);
     private AI HardAI = new MinMaxAI(3, new RealAndSafeMovesEvaluationFunction(), true, true, 14, true);
