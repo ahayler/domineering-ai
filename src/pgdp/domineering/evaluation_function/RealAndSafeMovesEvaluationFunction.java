@@ -8,6 +8,6 @@ public class RealAndSafeMovesEvaluationFunction extends EvaluationFunction {
                           int verticalSafeMoves, int horizontalSafeMoves,
                           int verticalSafeMovePossibilities, int horizontalSafeMovePossibilities) {
         return new int[]{verticalRealMoves + verticalSafeMoves - horizontalRealMoves - horizontalSafeMoves,
-        verticalMobility - horizontalMobility};
+                verticalSafeMoves - horizontalSafeMoves};
     }
 }
