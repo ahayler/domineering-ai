@@ -292,15 +292,13 @@ public class Game {
                     Tuple<Boolean, Integer> evaluation = isPossibilityTile(board, new Coordinate(i, j), player);
 
                     if(evaluation.x) {
-                        if (direction == 0) {
-                            direction = evaluation.y;
-                            tile_count++;
-                        } else if (direction == evaluation.y) {
+                        if(direction == evaluation.y) {
                             tile_count++;
                         } else {
-                            // if the chunk has ended add to moves
+                            // wall direction changes (1 because this tile is a possiblity tile)
                             moves_count += tile_count / 2;
-                            tile_count = 0;
+                            tile_count = 1;
+                            direction = evaluation.y;
                         }
                     } else {
                         // if the chunk has ended add to moves
@@ -321,15 +319,13 @@ public class Game {
                     Tuple<Boolean, Integer> evaluation = isPossibilityTile(board, new Coordinate(i, j), player);
 
                     if(evaluation.x) {
-                        if (direction == 0) {
-                            direction = evaluation.y;
-                            tile_count++;
-                        } else if (direction == evaluation.y) {
+                        if(direction == evaluation.y) {
                             tile_count++;
                         } else {
-                            // if the chunk has ended add to moves
+                            // wall direction changes (1 because this tile is a possiblity tile)
                             moves_count += tile_count / 2;
-                            tile_count = 0;
+                            tile_count = 1;
+                            direction = evaluation.y;
                         }
                     } else {
                         // if the chunk has ended add to moves

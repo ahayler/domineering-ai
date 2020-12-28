@@ -7,6 +7,9 @@ import pgdp.domineering.Player;
 import pgdp.domineering.AI;
 
 public class AdvancedCostFunctionAI extends AI {
+    /*
+    NOTE: Code IS NOT maintained and may be outdated. Please use the MinMaxAI.
+    */
     @Override
     public Coordinate playMove(char[][] board, Player player, Mode mode) {
         return getMove(board, player);

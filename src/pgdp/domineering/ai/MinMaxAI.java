@@ -64,7 +64,7 @@ public class MinMaxAI extends AI {
                         depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], player), alpha, beta);
 
                 // max(evaluation, best move)
-                if (evaluation[0] == 1000) {
+                if (evaluation[0] >= 1000) {
                     // if a winning move is found end search
                     return movesArray[i];
                 } else if (evaluation[0] > maxRealMovesDiff ||
@@ -97,7 +97,7 @@ public class MinMaxAI extends AI {
                         depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], player), alpha, beta);
 
                 // min(eval, best move)
-                if (evaluation[0] == -1000) {
+                if (evaluation[0] <= -1000) {
                     // if a winning move is found end search
                     return movesArray[i];
                 } else if (evaluation[0] < minRealMovesDiff ||
@@ -255,9 +255,6 @@ public class MinMaxAI extends AI {
             playerMobility = 0;
             opponentMobility = 0;
         }
-
-
-
 
         int realMovesVertical;
         int safeMovesVertical;
