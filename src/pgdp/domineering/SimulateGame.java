@@ -13,9 +13,9 @@ public class SimulateGame {
     }
 
     public static void testSimpleGameStructure() {
-        Game game = new Game(new MinMaxAI(5, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
-                false, 10, true),
-                new OldMinMaxAI(3, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
+        Game game = new Game(new MinMaxAI(4, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
+                false, 0, true),
+                new MinMaxAI(3, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
                         false, 0, true), Mode.EASY);
         game.runGame();
         System.out.println(game.getWinner());
