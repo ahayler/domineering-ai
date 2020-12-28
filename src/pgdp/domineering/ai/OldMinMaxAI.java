@@ -4,6 +4,9 @@ import pgdp.domineering.*;
 import pgdp.domineering.evaluation_function.EvaluationFunction;
 
 public class OldMinMaxAI extends AI {
+    /*
+    NOTE: Legacy: Should work, but no further maintenance!
+     */
     private final int depth;
     private final EvaluationFunction evaluationFunction;
     private final boolean useSafeMovePruning;
