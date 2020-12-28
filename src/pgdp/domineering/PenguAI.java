@@ -15,7 +15,7 @@ public class PenguAI extends AI {
     private AI MediumAI = new MinMaxAI(2, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
             true, 10, true);
     private AI HardAI = new MinMaxAI(3, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
-            true, 15, true);
+            false, 0, true);
 
     @Override
     public synchronized Coordinate playMove(char[][] board, Player player, Mode mode) {
