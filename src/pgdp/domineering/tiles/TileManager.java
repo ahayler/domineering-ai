@@ -5,9 +5,12 @@ import pgdp.domineering.Game;
 import pgdp.domineering.Player;
 import pgdp.domineering.Tuple;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TileManager {
 
-    public static Tile[][] boardToTileBoard(char[][] board){
+    public static Tile[][] boardToTileBoard(char[][] board) {
         /*
         Convert a board into a tile board.
         */
@@ -50,14 +53,78 @@ public class TileManager {
         return copy;
     }
 
-    public static Tuple<char[][], Tile[][]>playMoveAndUpdateBoards(char[][] board, Tile[][] tileBoard, Coordinate move,
-                                                            Player player) {
+    public static Tile[][] makeMoveAndCopyBoard(Tile[][] boardToCopy, Coordinate move, Player player) {
+        // Note: Always check if a move is possible before making a move. Updates are included
+
+        // copy the board first
+        Tile[][] tileBoard = copyTileBoard(boardToCopy);
+
+        char c;
+        if (player == Player.V) c = 'V';
+        else c = 'H';
+
+        tileBoard[move.getX()][move.getY()].setTileChar(c);
+        Coordinate secondCoordinate = Game.getSecondCoordinate(move, player);
+        tileBoard[secondCoordinate.getX()][secondCoordinate.getY()].setTileChar(c);
+
+        // determine all tiles to update
+        Coordinate[] coordinatesToUpdate = getCoordinatesToUpdate(move, player);
+
+        // update the determined coordinates
+        for (int i = 0; i < coordinatesToUpdate.length; i++) {
+            if (coordinateInBounds(tileBoard, coordinatesToUpdate[i])) {
+                tileBoard[coordinatesToUpdate[i].getX()][coordinatesToUpdate[i].getY()] =
+                        createUpdatedTile(tileBoard, coordinatesToUpdate[i]);
+            }
+        }
+
+
+        return tileBoard;
+    }
+
+    public static Tuple<char[][], Tile[][]> playMoveAndUpdateBoard(char[][] board, Tile[][] tileBoard, Coordinate move,
+                                                                   Player player) {
         // Play the move on the normal Board
         board = Game.makeMoveAndCopyBoard(board, move, player);
 
         // copy the tileBoard too
         tileBoard = TileManager.copyTileBoard(tileBoard);
 
+        // determine all tiles to update
+        Coordinate[] coordinatesToUpdate = getCoordinatesToUpdate(move, player);
+
+        // update the determined coordinates
+        for (int i = 0; i < coordinatesToUpdate.length; i++) {
+            if (coordinateInBounds(tileBoard, coordinatesToUpdate[i])) {
+                tileBoard[coordinatesToUpdate[i].getX()][coordinatesToUpdate[i].getY()] =
+                        createTileFromBoardPosition(board, coordinatesToUpdate[i]);
+            }
+        }
+        return new Tuple<>(board, tileBoard);
+    }
+
+    public static Tuple<char[][], Tile[][]> playMoveAndUpdateBoards(char[][] board, Tile[][] tileBoard, Coordinate move,
+                                                                    Player player) {
+        // Play the move on the normal Board
+        board = Game.makeMoveAndCopyBoard(board, move, player);
+
+        // copy the tileBoard too
+        tileBoard = TileManager.copyTileBoard(tileBoard);
+
+        // determine all tiles to update
+        Coordinate[] coordinatesToUpdate = getCoordinatesToUpdate(move, player);
+
+        // update the determined coordinates
+        for (int i = 0; i < coordinatesToUpdate.length; i++) {
+            if (coordinateInBounds(tileBoard, coordinatesToUpdate[i])) {
+                tileBoard[coordinatesToUpdate[i].getX()][coordinatesToUpdate[i].getY()] =
+                        createTileFromBoardPosition(board, coordinatesToUpdate[i]);
+            }
+        }
+        return new Tuple<>(board, tileBoard);
+    }
+
+    public static Coordinate[] getCoordinatesToUpdate(Coordinate move, Player player) {
         // determine all tiles to update
         Coordinate[] coordinatesToUpdate = new Coordinate[8];
         if (player == Player.V) {
@@ -87,15 +154,7 @@ public class TileManager {
             coordinatesToUpdate[6] = new Coordinate(move.getX() + 1, move.getY() - 1);
             coordinatesToUpdate[7] = new Coordinate(move.getX() + 1, move.getY() + 1);
         }
-
-        // update the determined coordinates
-        for (int i = 0; i < coordinatesToUpdate.length; i++) {
-            if (coordinateInBounds(tileBoard, coordinatesToUpdate[i])) {
-                tileBoard[coordinatesToUpdate[i].getX()][coordinatesToUpdate[i].getY()] =
-                        createTileFromBoardPosition(board, coordinatesToUpdate[i]);
-            }
-        }
-        return new Tuple<>(board, tileBoard);
+        return coordinatesToUpdate;
     }
 
     public static boolean coordinateInBounds(Tile[][] tileBoard, Coordinate coordinate) {
@@ -113,6 +172,21 @@ public class TileManager {
                 board[Position.getX()][Position.getY()], board[Position.getX()][Position.getY()] == 'E',
                 Game.isSafeTile(board, Position, Player.V),
                 Game.isSafeTile(board, Position, Player.H),
+                verticalPossibilityEvaluation.x, verticalPossibilityEvaluation.y,
+                horizontalPossibilityEvaluation.x, horizontalPossibilityEvaluation.y
+        );
+    }
+
+    public static Tile createUpdatedTile(Tile[][] tileBoard, Coordinate Position) {
+        Tuple<Boolean, Integer> verticalPossibilityEvaluation = isPossibilityTile(tileBoard, Position, Player.V);
+        Tuple<Boolean, Integer> horizontalPossibilityEvaluation =
+                isPossibilityTile(tileBoard, Position, Player.H);
+
+        return new Tile(
+                tileBoard[Position.getX()][Position.getY()].getTileChar(),
+                tileBoard[Position.getX()][Position.getY()].getTileChar() == 'E',
+                TileManager.isSafeTile(tileBoard, Position, Player.V),
+                TileManager.isSafeTile(tileBoard, Position, Player.H),
                 verticalPossibilityEvaluation.x, verticalPossibilityEvaluation.y,
                 horizontalPossibilityEvaluation.x, horizontalPossibilityEvaluation.y
         );
@@ -150,10 +224,10 @@ public class TileManager {
                         safeTileCount = 0;
 
                         if (tileBoard[i][j].isVerticalPossibilityTile()) {
-                            if(direction == tileBoard[i][j].getVerticalPossibilityDirection()) {
+                            if (direction == tileBoard[i][j].getVerticalPossibilityDirection()) {
                                 possibilityCount++;
                             } else {
-                                // wall direction changes (1 because this tile is a possiblity tile)
+                                // wall direction changes (1 because this tile is a possibility tile)
                                 verticalPossibilities += possibilityCount / 2;
                                 possibilityCount = 1;
                                 direction = tileBoard[i][j].getVerticalPossibilityDirection();
@@ -205,7 +279,7 @@ public class TileManager {
                         safeTileCount = 0;
 
                         if (tileBoard[i][j].isHorizontalPossibilityTile()) {
-                            if(direction == tileBoard[i][j].getHorizontalPossibilityDirection()) {
+                            if (direction == tileBoard[i][j].getHorizontalPossibilityDirection()) {
                                 possibilityCount++;
                             } else {
                                 // wall direction changes (1 because this tile is a possiblity tile)
@@ -237,5 +311,171 @@ public class TileManager {
 
         return new int[]{verticalRealMoves, horizontalRealMoves, verticalSafeMoves,
                 horizontalSafeMoves, verticalPossibilities, horizontalPossibilities};
+    }
+
+    public static Coordinate[] getAllPossibleMoves(Tile[][] tileBoard, Player player) {
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+        List<Coordinate> list = new ArrayList<Coordinate>();
+
+        int[] orderArray = new int[]{1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 12};
+
+        if (width == 13 && height == 13) {
+            if (player == Player.V) {
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player))
+                            list.add(new Coordinate(i, orderArray[j]));
+                    }
+                }
+            } else {
+                for (int i = 0; i < width; i++) {
+                    for (int j = 0; j < height; j++) {
+                        if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player))
+                            list.add(new Coordinate(orderArray[i], j));
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    if (movePossible(tileBoard, new Coordinate(i, j), player)) list.add(new Coordinate(i, j));
+                }
+            }
+        }
+
+
+        return list.toArray(new Coordinate[0]);
+    }
+
+    public static boolean movePossible(Tile[][] tileBoard, Coordinate move, Player player) {
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+
+        // check if first coordinate is out of bounds or already taken
+        if (move.getX() >= width || move.getY() >= height || move.getX() < 0 || move.getY() < 0 ||
+                tileBoard[move.getX()][move.getY()].getTileChar() != 'E')
+            return false;
+
+        // check if second coordinate is out of bounds or already taken
+        Coordinate secondCoordinate = Game.getSecondCoordinate(move, player);
+        if (secondCoordinate.getX() >= width || secondCoordinate.getY() >= height || secondCoordinate.getX() < 0
+                || secondCoordinate.getY() < 0 ||
+                tileBoard[secondCoordinate.getX()][secondCoordinate.getY()].getTileChar() != 'E')
+            return false;
+
+        return true;
+    }
+
+    public static boolean isSafeMove(Tile[][] tileBoard, Coordinate move, Player player) {
+        /*
+        This function is mainly used for safe move pruning.
+        We assume that any move proposed is at least a move within the bounds of the board.
+        */
+        if (player == Player.V) {
+            return isSafeTile(tileBoard, move, player) &&
+                    isSafeTile(tileBoard, new Coordinate(move.getX(), move.getY() + 1), player);
+        } else {
+            return isSafeTile(tileBoard, move, player) &&
+                    isSafeTile(tileBoard, new Coordinate(move.getX() + 1, move.getY()), player);
+        }
+    }
+
+    public static boolean isSafeTile(Tile[][] tileBoard, Coordinate tile, Player player) {
+        /*
+        Checks if a tile can't be touched by the other player.
+        (if the two adjacent on the other players axis are blocked)
+        */
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+
+        // check that the tile is empty
+        if (tileBoard[tile.getX()][tile.getY()].getTileChar() != 'E')
+            return false;
+
+        if (player == Player.V) {
+            // then check the left tile
+            if (tile.getX() - 1 >= 0) {
+                if (tileBoard[tile.getX() - 1][tile.getY()].getTileChar() == 'E')
+                    return false;
+            }
+            // and the right tile
+            if (tile.getX() + 1 <= width - 1) {
+                if (tileBoard[tile.getX() + 1][tile.getY()].getTileChar() == 'E')
+                    return false;
+            }
+        } else {
+            // check top tile
+            if (tile.getY() - 1 >= 0) {
+                if (tileBoard[tile.getX()][tile.getY() - 1].getTileChar() == 'E')
+                    return false;
+            }
+            // check bottom tile
+            if (tile.getY() + 1 <= height - 1) {
+                if (tileBoard[tile.getX()][tile.getY() + 1].getTileChar() == 'E')
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public static Tuple<Boolean, Integer> isPossibilityTile(Tile[][] tileBoard, Coordinate tile, Player player) {
+        /*
+        Returns whether a tile is a SafeMovePossibility-Tile and the direction of the wall.
+        1 is left/up and -1 right/down.
+        */
+        int direction = 0;
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+
+        // check that the tile is empty
+        if (tileBoard[tile.getX()][tile.getY()].getTileChar() != 'E')
+            return new Tuple<Boolean, Integer>(false, 0);
+
+        int tileCount = 0;
+
+        if (player == Player.V) {
+            // then check the left tile
+            if (tile.getX() - 1 >= 0) {
+                if (tileBoard[tile.getX() - 1][tile.getY()].getTileChar() != 'E')
+                    tileCount++;
+                direction = 1;
+            } else {
+                tileCount++;
+                direction = 1;
+            }
+            // and the right tile
+            if (tile.getX() + 1 <= width - 1) {
+                if (tileBoard[tile.getX() + 1][tile.getY()].getTileChar() != 'E') {
+                    tileCount++;
+                    direction = -1;
+                }
+            } else {
+                tileCount++;
+                direction = -1;
+            }
+        } else {
+            // check top tile
+            if (tile.getY() - 1 >= 0) {
+                if (tileBoard[tile.getX()][tile.getY() - 1].getTileChar() != 'E') {
+                    tileCount++;
+                    direction = 1;
+                }
+            } else {
+                tileCount++;
+                direction = 1;
+            }
+            // check bottom tile
+            if (tile.getY() + 1 <= height - 1) {
+                if (tileBoard[tile.getX()][tile.getY() + 1].getTileChar() != 'E') {
+                    tileCount++;
+                    direction = -1;
+                }
+            } else {
+                tileCount++;
+                direction = -1;
+            }
+        }
+        return new Tuple<Boolean, Integer>(tileCount == 1, direction);
     }
 }

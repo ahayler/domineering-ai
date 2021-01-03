@@ -95,7 +95,7 @@ public class Game {
 
         // copy the board first
         char[][] board = new char[boardToCopy.length][];
-        for(int i = 0; i < boardToCopy.length; i++)
+        for (int i = 0; i < boardToCopy.length; i++)
             board[i] = boardToCopy[i].clone();
 
         char c;
@@ -184,7 +184,7 @@ public class Game {
         return moves_count;
     }
 
-    public static int getSafeMoves (char[][] board, Player player) {
+    public static int getSafeMoves(char[][] board, Player player) {
        /*
        The maximum number of moves that a player can make from a given position in the remaining part of the game,
        irrespective of the moves that the opponent will make.
@@ -247,7 +247,7 @@ public class Game {
         if (player == Player.V) {
             // then check the left tile
             if (tile.getX() - 1 >= 0) {
-                if(board[tile.getX() - 1][tile.getY()] == 'E')
+                if (board[tile.getX() - 1][tile.getY()] == 'E')
                     return false;
             }
             // and the right tile
@@ -258,11 +258,11 @@ public class Game {
         } else {
             // check top tile
             if (tile.getY() - 1 >= 0) {
-                if(board[tile.getX()][tile.getY() - 1] == 'E')
+                if (board[tile.getX()][tile.getY() - 1] == 'E')
                     return false;
             }
             // check bottom tile
-            if(tile.getY() + 1 <= height - 1) {
+            if (tile.getY() + 1 <= height - 1) {
                 if (board[tile.getX()][tile.getY() + 1] == 'E')
                     return false;
             }
@@ -291,8 +291,8 @@ public class Game {
 
                     Tuple<Boolean, Integer> evaluation = isPossibilityTile(board, new Coordinate(i, j), player);
 
-                    if(evaluation.x) {
-                        if(direction == evaluation.y) {
+                    if (evaluation.x) {
+                        if (direction == evaluation.y) {
                             tile_count++;
                         } else {
                             // wall direction changes (1 because this tile is a possiblity tile)
@@ -318,8 +318,8 @@ public class Game {
                 for (int i = 0; i < width; i++) {
                     Tuple<Boolean, Integer> evaluation = isPossibilityTile(board, new Coordinate(i, j), player);
 
-                    if(evaluation.x) {
-                        if(direction == evaluation.y) {
+                    if (evaluation.x) {
+                        if (direction == evaluation.y) {
                             tile_count++;
                         } else {
                             // wall direction changes (1 because this tile is a possiblity tile)
@@ -354,15 +354,15 @@ public class Game {
 
         int tileCount = 0;
 
-        if(player == Player.V) {
+        if (player == Player.V) {
             // then check the left tile
             if (tile.getX() - 1 >= 0) {
-                if(board[tile.getX() - 1][tile.getY()] != 'E')
+                if (board[tile.getX() - 1][tile.getY()] != 'E')
                     tileCount++;
-                    direction = 1;
+                direction = 1;
             } else {
-            tileCount++;
-            direction = 1;
+                tileCount++;
+                direction = 1;
             }
             // and the right tile
             if (tile.getX() + 1 <= width - 1) {
@@ -377,7 +377,7 @@ public class Game {
         } else {
             // check top tile
             if (tile.getY() - 1 >= 0) {
-                if(board[tile.getX()][tile.getY() - 1] != 'E') {
+                if (board[tile.getX()][tile.getY() - 1] != 'E') {
                     tileCount++;
                     direction = 1;
                 }
@@ -386,7 +386,7 @@ public class Game {
                 direction = 1;
             }
             // check bottom tile
-            if(tile.getY() + 1 <= height - 1) {
+            if (tile.getY() + 1 <= height - 1) {
                 if (board[tile.getX()][tile.getY() + 1] != 'E') {
                     tileCount++;
                     direction = -1;
@@ -403,6 +403,7 @@ public class Game {
         int width = board.length;
         int height = board[0].length;
         List<Coordinate> list = new ArrayList<Coordinate>();
+
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -421,8 +422,7 @@ public class Game {
         if (player == Player.V) {
             return isSafeTile(board, move, player) &&
                     isSafeTile(board, new Coordinate(move.getX(), move.getY() + 1), player);
-        }
-        else {
+        } else {
             return isSafeTile(board, move, player) &&
                     isSafeTile(board, new Coordinate(move.getX() + 1, move.getY()), player);
         }

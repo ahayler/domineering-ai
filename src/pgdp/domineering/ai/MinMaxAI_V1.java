@@ -2,11 +2,10 @@ package pgdp.domineering.ai;
 
 import pgdp.domineering.*;
 import pgdp.domineering.evaluation_function.EvaluationFunction;
+import pgdp.domineering.tiles.Tile;
+import pgdp.domineering.tiles.TileManager;
 
-public class OldMinMaxAI extends AI {
-    /*
-    NOTE: Legacy: Should work, but no further maintenance!
-     */
+public class MinMaxAI_V1 extends AI {
     private final int depth;
     private final EvaluationFunction evaluationFunction;
     private final boolean useSafeMovePruning;
@@ -18,7 +17,7 @@ public class OldMinMaxAI extends AI {
     private final boolean useAlphaBeta;
 
 
-    public OldMinMaxAI(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
+    public MinMaxAI_V1(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
                        boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
@@ -45,6 +44,9 @@ public class OldMinMaxAI extends AI {
     }
 
     public Coordinate minMaxHead(char[][] board, int depth, Player player) {
+        // generate the tile board
+        Tile[][] tileBoard = TileManager.boardToTileBoard(board);
+
         // the head is very similar to mixMax itself but it returns the coordinate.
         int[] alpha = new int[]{-2000, -2000};
         int[] beta = new int[]{2000, 2000};
@@ -62,7 +64,9 @@ public class OldMinMaxAI extends AI {
             int maxSafeMoveDiff = -2000;
             Coordinate bestMove = null;
             for (int i = 0; i < movesArray.length; i++) {
-                int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], player),
+                Tuple<char[][], Tile[][]>updatedBoards = TileManager.playMoveAndUpdateBoards(
+                        board, tileBoard, movesArray[i], player);
+                int[] evaluation = minMax(updatedBoards.x, updatedBoards.y,
                         depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], player), alpha, beta);
 
                 // max(evaluation, best move)
@@ -95,7 +99,9 @@ public class OldMinMaxAI extends AI {
             Coordinate bestMove = null;
 
             for (int i = 0; i < movesArray.length; i++) {
-                int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], player),
+                Tuple<char[][], Tile[][]>updatedBoards = TileManager.playMoveAndUpdateBoards(
+                        board, tileBoard, movesArray[i], player);
+                int[] evaluation = minMax(updatedBoards.x, updatedBoards.y,
                         depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], player), alpha, beta);
 
                 // min(eval, best move)
@@ -125,7 +131,8 @@ public class OldMinMaxAI extends AI {
 
     }
 
-    public int[] minMax(char[][] board, int depth, Player player, boolean lastMoveWasASafeMove, int[] alpha, int[] beta) {
+    public int[] minMax(char[][] board, Tile[][] tileBoard, int depth, Player player,
+                        boolean lastMoveWasASafeMove, int[] alpha, int[] beta) {
         /* The vertical player maximizes and horizontal minimizes */
 
 
@@ -136,7 +143,7 @@ public class OldMinMaxAI extends AI {
 
 
         // Note: It is important to call the evaluation with the opponent as he has made the last move
-        Tuple<Boolean, int[]> boardEvaluation = checkIfGameEndedAndComputeStaticEvaluation(board, opponent,
+        Tuple<Boolean, int[]> boardEvaluation = checkIfGameEndedAndComputeStaticEvaluation(board, tileBoard, opponent,
                 lastMoveWasASafeMove);
 
         if (boardEvaluation.x || depth == 0) {
@@ -148,11 +155,11 @@ public class OldMinMaxAI extends AI {
 
         // The vertical player is the maximizing player
         if (player == Player.V)
-            return max(board, depth, alpha, beta);
-        else return min(board, depth, alpha, beta);
+            return max(board, tileBoard, depth, alpha, beta);
+        else return min(board, tileBoard, depth, alpha, beta);
     }
 
-    public int[] max(char[][] board, int depth, int[] alpha, int[] beta) {
+    public int[] max(char[][] board, Tile[][] tileBoard, int depth, int[] alpha, int[] beta) {
         // maximize the value of the Static Evaluation
 
         // first get all possible moves
@@ -162,7 +169,9 @@ public class OldMinMaxAI extends AI {
         int maxSafeMoveDiff = -2000;
 
         for (int i = 0; i < movesArray.length; i++) {
-            int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], Player.V),
+            Tuple<char[][], Tile[][]>updatedBoards = TileManager.playMoveAndUpdateBoards(
+                    board, tileBoard, movesArray[i], Player.V);
+            int[] evaluation = minMax(updatedBoards.x, updatedBoards.y,
                     depth - 1, Player.H, isMoveSafeMove(board, movesArray[i], Player.V), alpha, beta);
 
             if (evaluation[0] == 1000) {
@@ -189,7 +198,7 @@ public class OldMinMaxAI extends AI {
         return new int[]{maxRealMovesDiff, maxSafeMoveDiff};
     }
 
-    public int[] min(char[][] board, int depth, int[] alpha, int[] beta) {
+    public int[] min(char[][] board, Tile[][] tileBoard, int depth, int[] alpha, int[] beta) {
         // minimize the value of the Static Evaluation
 
         // first get all possible moves
@@ -199,7 +208,9 @@ public class OldMinMaxAI extends AI {
         int minSafeMoveDiff = 2000;
 
         for (int i = 0; i < movesArray.length; i++) {
-            int[] evaluation = minMax(Game.makeMoveAndCopyBoard(board, movesArray[i], Player.H),
+            Tuple<char[][], Tile[][]>updatedBoards = TileManager.playMoveAndUpdateBoards(
+                    board, tileBoard, movesArray[i], Player.H);
+            int[] evaluation = minMax(updatedBoards.x, updatedBoards.y,
                     depth - 1, Player.V, isMoveSafeMove(board, movesArray[i], Player.H), alpha, beta);
 
             if (evaluation[0] == -1000) {
@@ -227,7 +238,7 @@ public class OldMinMaxAI extends AI {
     }
 
     public Tuple<Boolean, int[]> checkIfGameEndedAndComputeStaticEvaluation
-            (char[][] board, Player player, boolean lastMoveWasASafeMove) {
+            (char[][] board, Tile[][] tileBoard, Player player, boolean lastMoveWasASafeMove) {
         /*
         Checks if the game has ended. The player is needed to
         see who JUST made a move.
@@ -242,48 +253,37 @@ public class OldMinMaxAI extends AI {
         boolean opponentWins = false;
         boolean gameDecided = false;
 
-        int playerSafeMoves = Game.getSafeMoves(board, player);
-        int opponentSafeMoves = Game.getSafeMoves(board, opponent);
-        int playerRealMoves = Game.getRealMoves(board, player);
-        int opponentRealMoves = Game.getRealMoves(board, opponent);
+        int[] metrics = TileManager.getRealMovesSafeMovesAndPossibilitiesVerticalAndHorizontal(tileBoard);
 
+        int realMovesVertical = metrics[0];
+        int realMovesHorizontal = metrics[1];
+        int safeMovesVertical = metrics[2];
+        int safeMovesHorizontal = metrics[3];
+        int verticalSafeMovePossibilities = metrics[4];
+        int horizontalSafeMovePossibilities = metrics[5];
 
-        int playerMobility;
-        int opponentMobility;
+        int verticalMobility, horizontalMobility;
+
         if (evaluationFunction.mobilityNeeded()) {
-            playerMobility = Game.getMobility(board, player);
-            opponentMobility = Game.getMobility(board, opponent);
+            verticalMobility = Game.getMobility(board, Player.V);
+            horizontalMobility = Game.getMobility(board, Player.H);
         } else {
-            playerMobility = 0;
-            opponentMobility = 0;
+            verticalMobility = 0;
+            horizontalMobility = 0;
         }
 
-        int realMovesVertical;
-        int safeMovesVertical;
-        int realMovesHorizontal;
-        int safeMovesHorizontal;
-        int verticalMobility;
-        int horizontalMobility;
 
-        int verticalSafeMovePossibilities = Game.getSafeMovePossibilities(board, Player.V);
-        int horizontalSafeMovePossibilities = Game.getSafeMovePossibilities(board, Player.H);
-
+        int playerRealMoves, playerSafeMoves, opponentRealMoves, opponentSafeMoves;
         if (player == Player.V) {
-            realMovesVertical = playerRealMoves;
-            safeMovesVertical = playerSafeMoves;
-            realMovesHorizontal = opponentRealMoves;
-            safeMovesHorizontal = opponentSafeMoves;
-            verticalMobility = playerMobility;
-            horizontalMobility = opponentMobility;
-
-
+            playerRealMoves = realMovesVertical;
+            playerSafeMoves = safeMovesVertical;
+            opponentRealMoves = realMovesHorizontal;
+            opponentSafeMoves = safeMovesHorizontal;
         } else {
-            realMovesVertical = opponentRealMoves;
-            safeMovesVertical = opponentSafeMoves;
-            realMovesHorizontal = playerRealMoves;
-            safeMovesHorizontal = playerSafeMoves;
-            verticalMobility = opponentMobility;
-            horizontalMobility = playerMobility;
+            playerRealMoves = realMovesHorizontal;
+            playerSafeMoves = safeMovesHorizontal;
+            opponentRealMoves = realMovesVertical;
+            opponentSafeMoves = safeMovesVertical;
         }
 
         /*
