@@ -31,7 +31,8 @@ public class Game {
 
             GameVisualizer.printBoard(board);
             System.out.println(BoardConverter.boardToString(board));
-            System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
+            System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)
+                    + getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + " (" +
                     (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
 
             // First player plays vertically
@@ -52,7 +53,8 @@ public class Game {
 
             GameVisualizer.printBoard(board);
             System.out.println(BoardConverter.boardToString(board));
-            System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)) + " (" +
+            System.out.println((getRealMoves(board, playerVertical) - getRealMoves(board, playerHorizontal)
+                    + getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + " (" +
                     (getSafeMoves(board, playerVertical) - getSafeMoves(board, playerHorizontal)) + ")");
             System.out.println();
 
