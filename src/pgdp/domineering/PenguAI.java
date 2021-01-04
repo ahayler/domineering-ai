@@ -14,7 +14,7 @@ public class PenguAI extends AI {
             false, 0, true, false);
     private AI MediumAI = new MinMaxAI_V2(2, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
             true, 10, true, false);
-    private AI HardAI = new MinMaxAI_V2(5, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
+    private AI HardAI = new MinMaxAI_V2(6, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
             false, 11, true, true);
 
     @Override
