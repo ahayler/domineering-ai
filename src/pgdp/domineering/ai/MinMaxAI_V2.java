@@ -10,6 +10,7 @@ public class MinMaxAI_V2 extends AI {
     private final int depth;
     private final EvaluationFunction evaluationFunction;
     private final boolean useSafeMovePruning;
+    private final boolean useSMCMovePruning;
 
     private final boolean increaseDepth;
     private final int increaseDepthTurn;
@@ -19,10 +20,11 @@ public class MinMaxAI_V2 extends AI {
 
 
     public MinMaxAI_V2(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
-                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta) {
+                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
         this.useSafeMovePruning = useSafeMovePruning;
+        this.useSMCMovePruning = useSMCMovePruning;
 
         this.increaseDepth = increaseDepth;
         this.increaseDepthTurn = increaseDepthTurn;
@@ -54,7 +56,7 @@ public class MinMaxAI_V2 extends AI {
         int[] beta = new int[]{2000, 2000};
 
         // first get all possible moves
-        Coordinate[] movesArray = TileManager.getAllPossibleMoves(tileBoard, player);
+        Coordinate[] movesArray = getMoves(tileBoard, player);
 
         if (depth < 1) {
             return null;
@@ -163,7 +165,7 @@ public class MinMaxAI_V2 extends AI {
         // maximize the value of the Static Evaluation
 
         // first get all possible moves
-        Coordinate[] movesArray = TileManager.getAllPossibleMoves(tileBoard, Player.V);
+        Coordinate[] movesArray = getMoves(tileBoard, Player.V);
 
         int maxRealMovesDiff = -2000;
         int maxSafeMoveDiff = -2000;
@@ -201,7 +203,7 @@ public class MinMaxAI_V2 extends AI {
         // minimize the value of the Static Evaluation
 
         // first get all possible moves
-        Coordinate[] movesArray = TileManager.getAllPossibleMoves(tileBoard, Player.H);
+        Coordinate[] movesArray = getMoves(tileBoard, Player.H);
 
         int minRealMovesDiff = 2000;
         int minSafeMoveDiff = 2000;
@@ -325,5 +327,19 @@ public class MinMaxAI_V2 extends AI {
         if (useSafeMovePruning)
             return TileManager.isSafeMove(tileBoard, move, player);
         else return false;
+    }
+
+    public Coordinate[] getMoves(Tile[][] tileBoard, Player player) {
+        if(useSMCMovePruning)
+            return getAllMovesWithSMCPruning(tileBoard, player);
+        else return TileManager.getAllPossibleMoves(tileBoard, player);
+    }
+
+    public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
+        Coordinate[] moves = TileManager.getAllSMCMoves(tileBoard, player);
+
+        if (moves.length == 0) {
+            return TileManager.getAllPossibleMoves(tileBoard, player);
+        } else return moves;
     }
 }

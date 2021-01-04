@@ -322,17 +322,19 @@ public class TileManager {
 
         if (width == 13 && height == 13) {
             if (player == Player.V) {
-                for (int j = 0; j < height; j++) {
-                    for (int i = 0; i < width; i++) {
-                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player))
-                            list.add(new Coordinate(i, orderArray[j]));
-                    }
-                }
-            } else {
+                // x stays fixed at the optimized position and y is changing
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player))
                             list.add(new Coordinate(orderArray[i], j));
+                    }
+                }
+            } else {
+                // y stays fixed at the optimized position and x is changing
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player))
+                            list.add(new Coordinate(i, orderArray[j]));
                     }
                 }
             }
@@ -477,5 +479,117 @@ public class TileManager {
             }
         }
         return new Tuple<Boolean, Integer>(tileCount == 1, direction);
+    }
+
+    public static boolean isSMCM(Tile[][] tileBoard, Coordinate move, Player player) {
+        /*
+        SMCM = Safe Move Creation Move ==> A move that creates a safe move.
+        */
+        /*
+        TODO: Adjust for only fake safe moves remaining.
+         */
+
+        if (player == Player.V) {
+            //check if there is are safe move possible to the left
+            if (move.getX() - 1 >= 0) {
+                // check upper tile first
+                if (tileBoard[move.getX() - 1][move.getY()].isVerticalPossibilityTile()) {
+                    // safe move to the direct left
+                    if (move.getY() + 1 < tileBoard[0].length &&
+                            tileBoard[move.getX() - 1][move.getY() + 1].isVerticalPossibilityTile()) {
+                        return true;
+                    }
+                    // safe move to the upper left
+                    else if (move.getY() - 1 > 0 &&
+                            tileBoard[move.getX() - 1][move.getY() - 1].isVerticalSafeTile())
+                        return true;
+                    // safe move to the lower left
+                } else if (move.getY() + 2 < tileBoard[0].length &&
+                        tileBoard[move.getX() - 1][move.getY() + 1].isVerticalPossibilityTile() &&
+                        tileBoard[move.getX() - 1][move.getY() + 2].isVerticalSafeTile()) {
+                    return true;
+                }
+            }
+
+            //check if there is a safe move possible to the right
+            if (move.getX() + 1 < tileBoard.length) {
+                // check upper right first
+                if (tileBoard[move.getX() + 1][move.getY()].isVerticalPossibilityTile()) {
+                    // safe move to the direct right
+                    if (move.getY() + 1 < tileBoard[0].length &&
+                            tileBoard[move.getX() + 1][move.getY() + 1].isVerticalPossibilityTile()) {
+                        return true;
+                    }
+                    // safe move to the upper right
+                    else if (move.getY() - 1 > 0 && tileBoard[move.getX() + 1][move.getY() - 1].isVerticalSafeTile())
+                        return true;
+                    // safe move to the lower right
+                } else if (move.getY() + 2 < tileBoard[0].length &&
+                        tileBoard[move.getX() + 1][move.getY() + 1].isVerticalPossibilityTile() &&
+                        tileBoard[move.getX() + 1][move.getY() + 2].isVerticalSafeTile()) {
+                    return true;
+                }
+            }
+        } else {
+            //check if there is are safe move possible to the top
+            if (move.getY() - 1 >= 0) {
+                // check left tile first
+                if (tileBoard[move.getX()][move.getY() - 1].isHorizontalPossibilityTile()) {
+                    // safe move directly atop
+                    if (move.getX() + 1 < tileBoard.length &&
+                            tileBoard[move.getX() + 1][move.getY() - 1].isHorizontalPossibilityTile()) {
+                        return true;
+                    }
+                    // safe move to the top left
+                    else if (move.getX() - 1 > 0 &&
+                            tileBoard[move.getX() - 1][move.getY() - 1].isHorizontalSafeTile())
+                        return true;
+                    // safe move to top right
+                } else if (move.getX() + 2 < tileBoard.length &&
+                        tileBoard[move.getX() + 1][move.getY() - 1].isHorizontalPossibilityTile() &&
+                        tileBoard[move.getX() + 2][move.getY() - 1].isHorizontalSafeTile()) {
+                    return true;
+                }
+            }
+
+            //check if there is a safe move possible to the bottom
+            if (move.getY() + 1 < tileBoard[0].length) {
+                // check the lower left tile first
+                if (tileBoard[move.getX()][move.getY() + 1].isHorizontalPossibilityTile()) {
+                    // safe move to the direct bottom
+                    if (move.getX() + 1 < tileBoard.length &&
+                            tileBoard[move.getX() + 1][move.getY() + 1].isHorizontalPossibilityTile()) {
+                        return true;
+                    }
+                    // safe move to the bottom left
+                    else if (move.getX() - 1 > 0 && tileBoard[move.getX() - 1][move.getY() + 1].isHorizontalSafeTile())
+                        return true;
+                    // safe move to the bottom right
+                } else if (move.getX() + 2 < tileBoard.length &&
+                        tileBoard[move.getX() + 1][move.getY() + 1].isHorizontalPossibilityTile() &&
+                        tileBoard[move.getX() + 2][move.getY() + 1].isHorizontalSafeTile()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static Coordinate[] getAllSMCMoves(Tile[][] tileBoard, Player player) {
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+        List<Coordinate> list = new ArrayList<Coordinate>();
+
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if (movePossible(tileBoard, new Coordinate(i, j), player)
+                        && isSMCM(tileBoard, new Coordinate(i, j), player)) list.add(new Coordinate(i, j));
+            }
+        }
+
+
+        return list.toArray(new Coordinate[0]);
     }
 }
