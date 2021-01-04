@@ -320,7 +320,7 @@ public class TileManager {
 
         int[] orderArray = new int[]{1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 12};
 
-        if (width == 13 && height == 13) {
+        if (false) { //width == 13 && height == 13
             if (player == Player.V) {
                 // x stays fixed at the optimized position and y is changing
                 for (int i = 0; i < width; i++) {
@@ -481,9 +481,12 @@ public class TileManager {
         return new Tuple<Boolean, Integer>(tileCount == 1, direction);
     }
 
-    public static boolean isSMCM(Tile[][] tileBoard, Coordinate move, Player player) {
+    public static boolean[] isSMCM(Tile[][] tileBoard, Coordinate move, Player player) {
         /*
         SMCM = Safe Move Creation Move ==> A move that creates a safe move.
+
+        0 = isSMCM
+        1 = for Sure
         */
         /*
         TODO: Adjust for only fake safe moves remaining.
@@ -497,17 +500,17 @@ public class TileManager {
                     // safe move to the direct left
                     if (move.getY() + 1 < tileBoard[0].length &&
                             tileBoard[move.getX() - 1][move.getY() + 1].isVerticalPossibilityTile()) {
-                        return true;
+                        return new boolean[]{true, true};
                     }
                     // safe move to the upper left
                     else if (move.getY() - 1 > 0 &&
                             tileBoard[move.getX() - 1][move.getY() - 1].isVerticalSafeTile())
-                        return true;
+                        return new boolean[]{true, false};
                     // safe move to the lower left
                 } else if (move.getY() + 2 < tileBoard[0].length &&
                         tileBoard[move.getX() - 1][move.getY() + 1].isVerticalPossibilityTile() &&
                         tileBoard[move.getX() - 1][move.getY() + 2].isVerticalSafeTile()) {
-                    return true;
+                    return new boolean[]{true, false};
                 }
             }
 
@@ -518,16 +521,16 @@ public class TileManager {
                     // safe move to the direct right
                     if (move.getY() + 1 < tileBoard[0].length &&
                             tileBoard[move.getX() + 1][move.getY() + 1].isVerticalPossibilityTile()) {
-                        return true;
+                        return new boolean[]{true, true};
                     }
                     // safe move to the upper right
                     else if (move.getY() - 1 > 0 && tileBoard[move.getX() + 1][move.getY() - 1].isVerticalSafeTile())
-                        return true;
+                        return new boolean[]{true, false};
                     // safe move to the lower right
                 } else if (move.getY() + 2 < tileBoard[0].length &&
                         tileBoard[move.getX() + 1][move.getY() + 1].isVerticalPossibilityTile() &&
                         tileBoard[move.getX() + 1][move.getY() + 2].isVerticalSafeTile()) {
-                    return true;
+                    return new boolean[]{true, false};
                 }
             }
         } else {
@@ -538,17 +541,17 @@ public class TileManager {
                     // safe move directly atop
                     if (move.getX() + 1 < tileBoard.length &&
                             tileBoard[move.getX() + 1][move.getY() - 1].isHorizontalPossibilityTile()) {
-                        return true;
+                        return new boolean[]{true, true};
                     }
                     // safe move to the top left
                     else if (move.getX() - 1 > 0 &&
                             tileBoard[move.getX() - 1][move.getY() - 1].isHorizontalSafeTile())
-                        return true;
+                        return new boolean[]{true, false};
                     // safe move to top right
                 } else if (move.getX() + 2 < tileBoard.length &&
                         tileBoard[move.getX() + 1][move.getY() - 1].isHorizontalPossibilityTile() &&
                         tileBoard[move.getX() + 2][move.getY() - 1].isHorizontalSafeTile()) {
-                    return true;
+                    return new boolean[]{true, false};
                 }
             }
 
@@ -559,37 +562,40 @@ public class TileManager {
                     // safe move to the direct bottom
                     if (move.getX() + 1 < tileBoard.length &&
                             tileBoard[move.getX() + 1][move.getY() + 1].isHorizontalPossibilityTile()) {
-                        return true;
+                        return new boolean[]{true, true};
                     }
                     // safe move to the bottom left
                     else if (move.getX() - 1 > 0 && tileBoard[move.getX() - 1][move.getY() + 1].isHorizontalSafeTile())
-                        return true;
+                        return new boolean[]{true, false};
                     // safe move to the bottom right
                 } else if (move.getX() + 2 < tileBoard.length &&
                         tileBoard[move.getX() + 1][move.getY() + 1].isHorizontalPossibilityTile() &&
                         tileBoard[move.getX() + 2][move.getY() + 1].isHorizontalSafeTile()) {
-                    return true;
+                    return new boolean[]{true, false};
                 }
             }
         }
 
-        return false;
+        return new boolean[]{false, false};
     }
 
-    public static Coordinate[] getAllSMCMoves(Tile[][] tileBoard, Player player) {
+    public static Tuple<Coordinate[], Boolean> getAllSMCMoves(Tile[][] tileBoard, Player player) {
+        /*
+        Return the moves and if it is sure to contain a SMC.
+        */
         int width = tileBoard.length;
         int height = tileBoard[0].length;
         List<Coordinate> list = new ArrayList<Coordinate>();
+        boolean guaranteeSMC = false;
 
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                if (movePossible(tileBoard, new Coordinate(i, j), player)
-                        && isSMCM(tileBoard, new Coordinate(i, j), player)) list.add(new Coordinate(i, j));
+                boolean[] eval = isSMCM(tileBoard, new Coordinate(i, j), player);
+                if (eval[1]) guaranteeSMC = true;
+                if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0]) list.add(new Coordinate(i, j));
             }
         }
-
-
-        return list.toArray(new Coordinate[0]);
+        return new Tuple<>(list.toArray(new Coordinate[0]), guaranteeSMC);
     }
 }
