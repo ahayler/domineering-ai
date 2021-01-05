@@ -799,10 +799,10 @@ public class TileManager {
         return list;
     }
 
-    public static boolean isCBMove(Tile[][] tileBoard, Coordinate move, Player player) {
+/*    public static boolean isCBMove(Tile[][] tileBoard, Coordinate move, Player player) {
         if (player == Player.V) {
             if(coordinateInBounds(tileBoard, new Coordinate(move.getX() - 1, move.getY())) &&
                     tileBoard[move.getX() - 1])
         }
-    }
+    }*/
 }
