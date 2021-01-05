@@ -6,6 +6,7 @@ import pgdp.domineering.evaluation_function.EvaluationFunction;
 import pgdp.domineering.tiles.Tile;
 import pgdp.domineering.tiles.TileManager;
 
+import java.util.List;
 import java.util.function.BinaryOperator;
 
 public class MinMaxAI_V2 extends AI {
@@ -338,10 +339,13 @@ public class MinMaxAI_V2 extends AI {
     }
 
     public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
-        Tuple<Coordinate[], Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
+        Tuple<List<Coordinate>, Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
+        List<Coordinate> allMoves = TileManager.getAllBlockingMoves(tileBoard, player);
+        allMoves.addAll(results.x);
 
-        if (!results.y || results.x.length == 0) {
+
+        if (!results.y || results.x.size() == 0) {
             return TileManager.getAllPossibleMoves(tileBoard, player);
-        } else return results.x;
+        } else return allMoves.toArray(new Coordinate[0]);
     }
 }

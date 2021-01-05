@@ -579,7 +579,7 @@ public class TileManager {
         return new boolean[]{false, false};
     }
 
-    public static Tuple<Coordinate[], Boolean> getAllSMCMoves(Tile[][] tileBoard, Player player) {
+    public static Tuple<List<Coordinate>, Boolean> getAllSMCMoves(Tile[][] tileBoard, Player player) {
         /*
         Return the moves and if it is sure to contain a SMC.
         */
@@ -588,14 +588,127 @@ public class TileManager {
         List<Coordinate> list = new ArrayList<Coordinate>();
         boolean guaranteeSMC = false;
 
+        int[] orderArray = new int[]{1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 12};
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                boolean[] eval = isSMCM(tileBoard, new Coordinate(i, j), player);
-                if (eval[1]) guaranteeSMC = true;
-                if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0]) list.add(new Coordinate(i, j));
+        if (width == 13 && height == 13) { //width == 13 && height == 13
+            if (player == Player.V) {
+                // x stays fixed at the optimized position and y is changing
+                for (int i = 0; i < width; i++) {
+                    for (int j = 0; j < height; j++) {
+                        boolean[] eval = isSMCM(tileBoard, new Coordinate(orderArray[i], j), player);
+                        if (eval[1]) guaranteeSMC = true;
+                        if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player) && eval[0])
+                            list.add(new Coordinate(orderArray[i], j));
+                    }
+                }
+            } else {
+                // y stays fixed at the optimized position and x is changing
+                for (int j = 0; j < height; j++) {
+                    for (int i = 0; i < width; i++) {
+                        boolean[] eval = isSMCM(tileBoard, new Coordinate(i, orderArray[j]), player);
+                        if (eval[1]) guaranteeSMC = true;
+                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player) && eval[0])
+                            list.add(new Coordinate(i, orderArray[j]));
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    boolean[] eval = isSMCM(tileBoard, new Coordinate(i, j), player);
+                    if (eval[1]) guaranteeSMC = true;
+                    if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0])
+                        list.add(new Coordinate(i, j));
+                }
             }
         }
-        return new Tuple<>(list.toArray(new Coordinate[0]), guaranteeSMC);
+
+
+        return new Tuple<>(list, guaranteeSMC);
+    }
+
+    public static List<Coordinate> getAllBlockingMoves(Tile[][] tileBoard, Player player) {
+        /* First just does the usual triple block */
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+        List<Coordinate> list = new ArrayList<Coordinate>();
+
+        // opponent locks for moves to
+        if (player == Player.H) {
+            // go through the rows
+            for (int j = 0; j < height - 1; j++) {
+                boolean startFound = true;
+                int startX = -1;
+                for (int i = 0; i < width; i++) {
+                    // disruption found?
+                    if (tileBoard[i][j].getTileChar() != 'E'
+                            || tileBoard[i][j + 1].getTileChar() != 'E') {
+                        // 2 wall found?
+                        if (tileBoard[i][j].getTileChar() != 'E'
+                                && tileBoard[i][j + 1].getTileChar() != 'E') {
+                            // length 3? (==> area found)
+                            if (startFound && i - startX == 4)
+                                list.addAll(getMovesInArea(tileBoard, player, startX + 1, j, i - 1, j + 1));
+
+                            // either way new start
+                            startFound = true;
+                            startX = i;
+                        }
+                        // disruption but no wall means start lost
+                        else {
+                            startFound = false;
+                        }
+                    }
+                }
+                // length 3? (==> area found)
+                if (startFound && width - startX == 4)
+                    list.addAll(getMovesInArea(tileBoard, player, startX + 1, j, width - 1, j + 1));
+
+            }
+        } else {
+            // Now searching for move to block H
+
+            // go through the collumns
+            for(int i = 0; i < width - 1; i++) {
+                boolean startFound = true;
+                int startY = -1;
+                for (int j = 0; j < height; j++) {
+                    // disruption found?
+                    if (tileBoard[i][j].getTileChar() != 'E'
+                            || tileBoard[i + 1][j].getTileChar() != 'E') {
+                        // 2 wall found?
+                        if (tileBoard[i][j].getTileChar() != 'E'
+                                && tileBoard[i + 1][j].getTileChar() != 'E') {
+                            // length 3? (==> area found)
+                            if (startFound && j - startY == 4)
+                                list.addAll(getMovesInArea(tileBoard, player, i, startY + 1, i + 1, j - 1));
+
+                            // either way new start
+                            startFound = true;
+                            startY = j;
+                        }
+                        // disruption but no wall means start lost
+                        else {
+                            startFound = false;
+                        }
+                    }
+
+                }
+                // length 3? (==> area found)
+                if (startFound && height - startY == 4)
+                    list.addAll(getMovesInArea(tileBoard, player, i, startY + 1, i + 1, height - 1));
+            }
+        }
+        return list;
+    }
+
+    public static List<Coordinate> getMovesInArea(Tile[][] tileBoard, Player player, int x0, int y0, int x1, int y1) {
+        List<Coordinate> list = new ArrayList<Coordinate>();
+        for (int x = x0; x <= x1; x++) {
+            for (int y = y0; y <= y1; y++) {
+                if (movePossible(tileBoard, new Coordinate(x, y), player)) list.add(new Coordinate(x, y));
+            }
+        }
+        return list;
     }
 }
