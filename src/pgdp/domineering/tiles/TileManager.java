@@ -646,8 +646,8 @@ public class TileManager {
                         // 2 wall found?
                         if (tileBoard[i][j].getTileChar() != 'E'
                                 && tileBoard[i][j + 1].getTileChar() != 'E') {
-                            // length 3? (==> area found)
-                            if (startFound && i - startX == 4)
+                            // length 3, 5 or 7? (==> area found)
+                            if (startFound && (i - startX == 4 || i - startX == 6 || i - startX == 8))
                                 list.addAll(getMovesInArea(tileBoard, player, startX + 1, j, i - 1, j + 1));
 
                             // either way new start
@@ -660,15 +660,15 @@ public class TileManager {
                         }
                     }
                 }
-                // length 3? (==> area found)
-                if (startFound && width - startX == 4)
+                // length 3, 5 or 7? (==> area found)
+                if (startFound && (width - startX == 4 || width - startX == 6 || width - startX == 8))
                     list.addAll(getMovesInArea(tileBoard, player, startX + 1, j, width - 1, j + 1));
 
             }
         } else {
             // Now searching for move to block H
 
-            // go through the collumns
+            // go through the columns
             for(int i = 0; i < width - 1; i++) {
                 boolean startFound = true;
                 int startY = -1;
@@ -679,8 +679,8 @@ public class TileManager {
                         // 2 wall found?
                         if (tileBoard[i][j].getTileChar() != 'E'
                                 && tileBoard[i + 1][j].getTileChar() != 'E') {
-                            // length 3? (==> area found)
-                            if (startFound && j - startY == 4)
+                            // length 3, 5 or 7? (==> area found)
+                            if (startFound && (j - startY == 4 || j - startY == 6 || j - startY == 8))
                                 list.addAll(getMovesInArea(tileBoard, player, i, startY + 1, i + 1, j - 1));
 
                             // either way new start
@@ -694,8 +694,8 @@ public class TileManager {
                     }
 
                 }
-                // length 3? (==> area found)
-                if (startFound && height - startY == 4)
+                // length 3, 5 or 7? (==> area found)
+                if (startFound && (height - startY == 4 || height - startY == 6 || height - startY == 8))
                     list.addAll(getMovesInArea(tileBoard, player, i, startY + 1, i + 1, height - 1));
             }
         }
@@ -707,6 +707,86 @@ public class TileManager {
         for (int x = x0; x <= x1; x++) {
             for (int y = y0; y <= y1; y++) {
                 if (movePossible(tileBoard, new Coordinate(x, y), player)) list.add(new Coordinate(x, y));
+            }
+        }
+        return list;
+    }
+
+    public static List<Coordinate> getBangerMoves(Tile[][] tileBoard, Player player) {
+        /*
+        A banger move is a playing in the middle of a 7*2 empty tile stretch (with walls on each side).
+        Playing it guarantees at least one safe move per turn and often times can only be blocked by expending
+        not playing a SMC, thus gaining a one safe move advantage over the opponent.
+        */
+
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+        List<Coordinate> list = new ArrayList<Coordinate>();
+
+        // here the player looks for his own moves (not for blocking moves)
+        if (player == Player.V) {
+            // go through the rows
+            for (int j = 0; j < height - 1; j++) {
+                boolean startFound = true;
+                int startX = -1;
+                for (int i = 0; i < width; i++) {
+                    // disruption found?
+                    if (tileBoard[i][j].getTileChar() != 'E'
+                            || tileBoard[i][j + 1].getTileChar() != 'E') {
+                        // 2 wall found?
+                        if (tileBoard[i][j].getTileChar() != 'E'
+                                && tileBoard[i][j + 1].getTileChar() != 'E') {
+                            // length 7? (==> banger move found)
+                            if (startFound && i - startX == 8)
+                                list.add(new Coordinate(i - 4, j));
+
+                            // either way new start
+                            startFound = true;
+                            startX = i;
+                        }
+                        // disruption but no wall means start lost
+                        else {
+                            startFound = false;
+                        }
+                    }
+                }
+                // length 7? (==> banger move found)
+                if (startFound && width - startX == 8)
+                    list.add(new Coordinate(width - 4, j));
+
+            }
+        } else {
+            // Now searching for banger moves for Player H
+
+            // go through the columns
+            for(int i = 0; i < width - 1; i++) {
+                boolean startFound = true;
+                int startY = -1;
+                for (int j = 0; j < height; j++) {
+                    // disruption found?
+                    if (tileBoard[i][j].getTileChar() != 'E'
+                            || tileBoard[i + 1][j].getTileChar() != 'E') {
+                        // 2 wall found?
+                        if (tileBoard[i][j].getTileChar() != 'E'
+                                && tileBoard[i + 1][j].getTileChar() != 'E') {
+                            // length 7? (==> banger move found)
+                            if (startFound && j - startY == 8)
+                                list.add(new Coordinate(i, j - 4));
+
+                            // either way new start
+                            startFound = true;
+                            startY = j;
+                        }
+                        // disruption but no wall means start lost
+                        else {
+                            startFound = false;
+                        }
+                    }
+
+                }
+                // length 7? (==> banger move found)
+                if (startFound && height - startY == 8)
+                    list.add(new Coordinate(i, height - 4));
             }
         }
         return list;

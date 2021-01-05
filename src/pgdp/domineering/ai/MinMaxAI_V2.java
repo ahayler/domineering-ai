@@ -340,7 +340,8 @@ public class MinMaxAI_V2 extends AI {
 
     public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
         Tuple<List<Coordinate>, Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
-        List<Coordinate> allMoves = TileManager.getAllBlockingMoves(tileBoard, player);
+        List<Coordinate> allMoves = TileManager.getBangerMoves(tileBoard, player);
+        allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
 
 
