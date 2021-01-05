@@ -350,10 +350,11 @@ public class MinMaxAI_V2 extends AI {
 
 
         if (results.y == 0 || results.y < minSMCMoves) {
-            if (TileManager.getAllPossibleMoves(tileBoard, player).length == 0) {
+            Coordinate [] result = TileManager.getAllPossibleMoves(tileBoard, player);
+            if (result.length == 0) {
                 System.out.println("THIS SHOULD NOT HAPPEN");
             }
-            return TileManager.getAllPossibleMoves(tileBoard, player);
+            return result;
         } else {
             Coordinate [] result = allMoves.toArray(new Coordinate[0]);
             if (result.length == 0) {
