@@ -590,7 +590,7 @@ public class TileManager {
 
         int[] orderArray = new int[]{1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 12};
 
-        if (width == 13 && height == 13) { //width == 13 && height == 13
+        if (false) { //width == 13 && height == 13
             if (player == Player.V) {
                 // x stays fixed at the optimized position and y is changing
                 for (int i = 0; i < width; i++) {
