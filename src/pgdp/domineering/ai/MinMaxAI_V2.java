@@ -19,15 +19,19 @@ public class MinMaxAI_V2 extends AI {
     private final int increaseDepthTurn;
     private int turnNumber;
 
+    private final int minSMCMoves;
+
     private final boolean useAlphaBeta;
 
 
     public MinMaxAI_V2(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
-                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning) {
+                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning,
+                       int minSMCMoves) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
         this.useSafeMovePruning = useSafeMovePruning;
         this.useSMCMovePruning = useSMCMovePruning;
+        this.minSMCMoves = minSMCMoves;
 
         this.increaseDepth = increaseDepth;
         this.increaseDepthTurn = increaseDepthTurn;
@@ -339,14 +343,23 @@ public class MinMaxAI_V2 extends AI {
     }
 
     public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
-        Tuple<List<Coordinate>, Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
+        Tuple<List<Coordinate>, Integer> results = TileManager.getAllSMCMoves(tileBoard, player);
         List<Coordinate> allMoves = TileManager.getBangerMoves(tileBoard, player);
         allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
 
 
-        if (!results.y || results.x.size() == 0) {
+        if (results.y == 0 || results.y < minSMCMoves) {
+            if (TileManager.getAllPossibleMoves(tileBoard, player).length == 0) {
+                System.out.println("THIS SHOULD NOT HAPPEN");
+            }
             return TileManager.getAllPossibleMoves(tileBoard, player);
-        } else return allMoves.toArray(new Coordinate[0]);
+        } else {
+            Coordinate [] result = allMoves.toArray(new Coordinate[0]);
+            if (result.length == 0) {
+                System.out.println("THIS SHOULD NOT HAPPEN");
+            }
+            return result;
+        }
     }
 }

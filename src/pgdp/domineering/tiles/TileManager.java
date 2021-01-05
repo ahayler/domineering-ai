@@ -579,14 +579,14 @@ public class TileManager {
         return new boolean[]{false, false};
     }
 
-    public static Tuple<List<Coordinate>, Boolean> getAllSMCMoves(Tile[][] tileBoard, Player player) {
+    public static Tuple<List<Coordinate>, Integer> getAllSMCMoves(Tile[][] tileBoard, Player player) {
         /*
         Return the moves and if it is sure to contain a SMC.
         */
         int width = tileBoard.length;
         int height = tileBoard[0].length;
         List<Coordinate> list = new ArrayList<Coordinate>();
-        boolean guaranteeSMC = false;
+        int guaranteeSMCCount = 0;
 
         int[] orderArray = new int[]{1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 12};
 
@@ -596,9 +596,10 @@ public class TileManager {
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         boolean[] eval = isSMCM(tileBoard, new Coordinate(orderArray[i], j), player);
-                        if (eval[1]) guaranteeSMC = true;
-                        if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player) && eval[0])
+                        if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player) && eval[0]) {
                             list.add(new Coordinate(orderArray[i], j));
+                            if (eval[1]) guaranteeSMCCount += 1;
+                        }
                     }
                 }
             } else {
@@ -606,9 +607,12 @@ public class TileManager {
                 for (int j = 0; j < height; j++) {
                     for (int i = 0; i < width; i++) {
                         boolean[] eval = isSMCM(tileBoard, new Coordinate(i, orderArray[j]), player);
-                        if (eval[1]) guaranteeSMC = true;
-                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player) && eval[0])
+
+                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player) && eval[0]) {
                             list.add(new Coordinate(i, orderArray[j]));
+                            if (eval[1]) guaranteeSMCCount += 1;
+                        }
+
                     }
                 }
             }
@@ -616,15 +620,18 @@ public class TileManager {
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     boolean[] eval = isSMCM(tileBoard, new Coordinate(i, j), player);
-                    if (eval[1]) guaranteeSMC = true;
-                    if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0])
+
+                    if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0]) {
                         list.add(new Coordinate(i, j));
+                        if (eval[1]) guaranteeSMCCount += 1;
+                    }
+
                 }
             }
         }
 
 
-        return new Tuple<>(list, guaranteeSMC);
+        return new Tuple<>(list, guaranteeSMCCount);
     }
 
     public static List<Coordinate> getAllBlockingMoves(Tile[][] tileBoard, Player player) {
