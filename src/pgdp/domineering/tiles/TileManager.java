@@ -579,26 +579,27 @@ public class TileManager {
         return new boolean[]{false, false};
     }
 
-    public static Tuple<List<Coordinate>, Boolean> getAllSMCMoves(Tile[][] tileBoard, Player player) {
+    public static Tuple<List<Coordinate>, Integer> getAllSMCMoves(Tile[][] tileBoard, Player player) {
         /*
         Return the moves and if it is sure to contain a SMC.
         */
         int width = tileBoard.length;
         int height = tileBoard[0].length;
         List<Coordinate> list = new ArrayList<Coordinate>();
-        boolean guaranteeSMC = false;
+        int guaranteeSMCCount = 0;
 
         int[] orderArray = new int[]{1, 11, 2, 10, 3, 9, 4, 8, 5, 7, 6, 0, 12};
 
-        if (width == 13 && height == 13) { //width == 13 && height == 13
+        if (false) { //width == 13 && height == 13
             if (player == Player.V) {
                 // x stays fixed at the optimized position and y is changing
                 for (int i = 0; i < width; i++) {
                     for (int j = 0; j < height; j++) {
                         boolean[] eval = isSMCM(tileBoard, new Coordinate(orderArray[i], j), player);
-                        if (eval[1]) guaranteeSMC = true;
-                        if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player) && eval[0])
+                        if (movePossible(tileBoard, new Coordinate(orderArray[i], j), player) && eval[0]) {
                             list.add(new Coordinate(orderArray[i], j));
+                            if (eval[1]) guaranteeSMCCount += 1;
+                        }
                     }
                 }
             } else {
@@ -606,9 +607,12 @@ public class TileManager {
                 for (int j = 0; j < height; j++) {
                     for (int i = 0; i < width; i++) {
                         boolean[] eval = isSMCM(tileBoard, new Coordinate(i, orderArray[j]), player);
-                        if (eval[1]) guaranteeSMC = true;
-                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player) && eval[0])
+
+                        if (movePossible(tileBoard, new Coordinate(i, orderArray[j]), player) && eval[0]) {
                             list.add(new Coordinate(i, orderArray[j]));
+                            if (eval[1]) guaranteeSMCCount += 1;
+                        }
+
                     }
                 }
             }
@@ -616,15 +620,18 @@ public class TileManager {
             for (int i = 0; i < width; i++) {
                 for (int j = 0; j < height; j++) {
                     boolean[] eval = isSMCM(tileBoard, new Coordinate(i, j), player);
-                    if (eval[1]) guaranteeSMC = true;
-                    if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0])
+
+                    if (movePossible(tileBoard, new Coordinate(i, j), player) && eval[0]) {
                         list.add(new Coordinate(i, j));
+                        if (eval[1]) guaranteeSMCCount += 1;
+                    }
+
                 }
             }
         }
 
 
-        return new Tuple<>(list, guaranteeSMC);
+        return new Tuple<>(list, guaranteeSMCCount);
     }
 
     public static List<Coordinate> getAllBlockingMoves(Tile[][] tileBoard, Player player) {
@@ -792,88 +799,10 @@ public class TileManager {
         return list;
     }
 
-
-    public static boolean isFilledTile(Tile[][] tileBoard, Coordinate move) {
-        return coordinateInBounds(tileBoard, move) && tileBoard[move.getX()][move.getY()].getTileChar() != 'E';
-    }
-
-    public static boolean isEmptyTile(Tile[][] tileBoard, Coordinate move) {
-        return coordinateInBounds(tileBoard, move) && tileBoard[move.getX()][move.getY()].getTileChar() == 'E';
-    }
-
-    public static boolean isExtensionMove(Tile[][] tileBoard, Coordinate move, Player player) {
-        /*
-        An extension move has a tile to at least one of the short sides and is surrounded by empty tiles on
-        the long sides.
-        */
-        if (movePossible(tileBoard, move, player)) {
-            if (player == Player.V) {
-                // check if there is a filled tile to the top or bottom
-                if (isFilledTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1))
-                        || isFilledTile(tileBoard, new Coordinate(move.getX(), move.getY() + 2))) {
-                    // now check if it is surrounded by empty tiles (first left then right)
-                    if (isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY())) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY() + 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY())) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() + 1))
-                    ) {
-                        return true;
-                    }
-                }
-            } else {
-                // check if there is a filled tile to left or right
-                if (isFilledTile(tileBoard, new Coordinate(move.getX() - 1, move.getY()))
-                        || isFilledTile(tileBoard, new Coordinate(move.getX() + 2, move.getY()))) {
-                    // now check if it is surrounded by empty tiles (first top then bottom)
-                    if (isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() - 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() + 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() + 1))
-                    )
-                        return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static List<Coordinate> getAllExtensionMoves (Tile[][] tileBoard, Player player) {
-        int width = tileBoard.length;
-        int height = tileBoard[0].length;
-        List<Coordinate> list = new ArrayList<Coordinate>();
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                if(isExtensionMove(tileBoard, new Coordinate(i, j), player))
-                    list.add(new Coordinate(i, j));
-            }
-        }
-
-        return list;
-    }
-
-    public static List<Coordinate> getAllOddExtensionMoves (Tile[][] tileBoard, Player player) {
-        int width = tileBoard.length;
-        int height = tileBoard[0].length;
-        List<Coordinate> list = new ArrayList<Coordinate>();
-
+/*    public static boolean isCBMove(Tile[][] tileBoard, Coordinate move, Player player) {
         if (player == Player.V) {
-            for (int i = 1; i < width; i+= 2) {
-                for (int j = 0; j < height; j++) {
-                    if(isExtensionMove(tileBoard, new Coordinate(i, j), player))
-                        list.add(new Coordinate(i, j));
-                }
-            }
-        } else {
-            for (int i = 0; i < width; i++) {
-                for (int j = 1; j < height; j+= 2) {
-                    if(isExtensionMove(tileBoard, new Coordinate(i, j), player))
-                        list.add(new Coordinate(i, j));
-                }
-            }
+            if(coordinateInBounds(tileBoard, new Coordinate(move.getX() - 1, move.getY())) &&
+                    tileBoard[move.getX() - 1])
         }
-
-        return list;
-    }
+    }*/
 }
-
