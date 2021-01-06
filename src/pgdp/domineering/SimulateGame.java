@@ -13,7 +13,7 @@ public class SimulateGame {
     public static void testSimpleGameStructure() {
         Game game = new Game(new MinMaxAI_V3(5, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
                 false, 13, true, true),
-                new MinMaxAI_V2(2, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
+                new MinMaxAI_V2(3, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
                         false, 13, true, false), Mode.EASY);
         game.runGame();
         System.out.println(game.getWinner());

@@ -23,7 +23,7 @@ public class MinMaxAI_V3 extends AI {
 
     private final boolean useAlphaBeta;
 
-    private Hashtable<String, int[]> hashtable;
+    private Hashtable<String, Tuple<String, int[]>> hashtable;
 
 
     public MinMaxAI_V3(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
@@ -39,7 +39,7 @@ public class MinMaxAI_V3 extends AI {
         this.useAlphaBeta = useAlphaBeta;
 
         this.turnNumber = 0;
-        hashtable = new Hashtable<String, int[]>(5000);
+        hashtable = new Hashtable<String, Tuple<String, int[]>>(10000);
     }
 
     @Override
@@ -82,14 +82,15 @@ public class MinMaxAI_V3 extends AI {
                 Tile[][] updatedBoard = TileManager.makeMoveAndCopyBoard(tileBoard, movesArray[i], player);
 
                 // hash stuff
-                String hash = TileManager.hashTileBoard(tileBoard);
-                int [] lookupValue = hashtable.get(hash);
+                String hash = TileManager.hashTileBoard(updatedBoard);
+                Tuple<String, int[]> lookupValue = hashtable.get(hash);
                 int[] evaluation;
                 if(lookupValue != null) {
-                    evaluation = lookupValue;
+                    evaluation = lookupValue.y;
                 } else {
                     evaluation = minMax(updatedBoard,
                             depth - 1, Player.H, isMoveSafeMove(tileBoard, movesArray[i], player), alpha, beta);
+                    hashtable.put(hash, new Tuple<>(hash,evaluation));
                 }
 
 
@@ -127,14 +128,15 @@ public class MinMaxAI_V3 extends AI {
                 Tile[][] updatedBoard = TileManager.makeMoveAndCopyBoard(tileBoard, movesArray[i], player);
 
                 // hash stuff
-                String hash = TileManager.hashTileBoard(tileBoard);
-                int [] lookupValue = hashtable.get(hash);
+                String hash = TileManager.hashTileBoard(updatedBoard);
+                Tuple<String, int[]> lookupValue = hashtable.get(hash);
                 int[] evaluation;
                 if(lookupValue != null) {
-                    evaluation = lookupValue;
+                    evaluation = lookupValue.y;
                 } else {
                     evaluation = minMax(updatedBoard,  depth - 1,
                             Player.V, isMoveSafeMove(tileBoard, movesArray[i], player), alpha, beta);
+                    hashtable.put(hash, new Tuple<>(hash,evaluation));
                 }
 
                 // min(eval, best move)
@@ -205,14 +207,16 @@ public class MinMaxAI_V3 extends AI {
             Tile[][] updatedBoard = TileManager.makeMoveAndCopyBoard(tileBoard, movesArray[i], Player.V);
 
             // hash stuff
-            String hash = TileManager.hashTileBoard(tileBoard);
-            int [] lookupValue = hashtable.get(hash);
+            String hash = TileManager.hashTileBoard(updatedBoard);
+            Tuple<String, int[]> lookupValue = hashtable.get(hash);
+
             int[] evaluation;
             if(lookupValue != null) {
-                evaluation = lookupValue;
+                evaluation = lookupValue.y;
             } else {
                 evaluation = minMax(updatedBoard,
                         depth - 1, Player.H, isMoveSafeMove(tileBoard, movesArray[i], Player.V), alpha, beta);
+                hashtable.put(hash, new Tuple<>(hash,evaluation));
             }
 
             if (evaluation[0] == 1000) {
@@ -252,14 +256,15 @@ public class MinMaxAI_V3 extends AI {
             Tile[][] updatedBoard = TileManager.makeMoveAndCopyBoard(tileBoard, movesArray[i], Player.H);
 
             // hash stuff
-            String hash = TileManager.hashTileBoard(tileBoard);
-            int [] lookupValue = hashtable.get(hash);
+            String hash = TileManager.hashTileBoard(updatedBoard);
+            Tuple<String, int[]> lookupValue = hashtable.get(hash);
             int[] evaluation;
             if(lookupValue != null) {
-                evaluation = lookupValue;
+                evaluation = lookupValue.y;
             } else {
                 evaluation = minMax(updatedBoard, depth - 1, Player.V,
                         isMoveSafeMove(tileBoard, movesArray[i], Player.H), alpha, beta);
+                hashtable.put(hash, new Tuple<>(hash,evaluation));
             }
             if (evaluation[0] == -1000) {
                 // if a winning move is found end search
