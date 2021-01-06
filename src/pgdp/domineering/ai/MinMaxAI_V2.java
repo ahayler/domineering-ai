@@ -6,6 +6,8 @@ import pgdp.domineering.evaluation_function.EvaluationFunction;
 import pgdp.domineering.tiles.Tile;
 import pgdp.domineering.tiles.TileManager;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.BinaryOperator;
 
@@ -19,19 +21,15 @@ public class MinMaxAI_V2 extends AI {
     private final int increaseDepthTurn;
     private int turnNumber;
 
-    private final int minSMCMoves;
-
     private final boolean useAlphaBeta;
 
 
     public MinMaxAI_V2(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
-                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning,
-                       int minSMCMoves) {
+                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
         this.useSafeMovePruning = useSafeMovePruning;
         this.useSMCMovePruning = useSMCMovePruning;
-        this.minSMCMoves = minSMCMoves;
 
         this.increaseDepth = increaseDepth;
         this.increaseDepthTurn = increaseDepthTurn;
@@ -343,24 +341,16 @@ public class MinMaxAI_V2 extends AI {
     }
 
     public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
-        Tuple<List<Coordinate>, Integer> results = TileManager.getAllSMCMoves(tileBoard, player);
-        List<Coordinate> allMoves = TileManager.getBangerMoves(tileBoard, player);
+        Tuple<List<Coordinate>, Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
+        HashSet<Coordinate> allMoves = new HashSet<>(TileManager.getBangerMoves(tileBoard, player));
+        /*        List<Coordinate> allMoves = new ArrayList<>(TileManager.getBangerMoves(tileBoard, player));*/
         allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
+        allMoves.addAll(TileManager.getAllExtensionMoves(tileBoard, player));
 
 
-        if (results.y == 0 || results.y < minSMCMoves) {
-            Coordinate [] result = TileManager.getAllPossibleMoves(tileBoard, player);
-            if (result.length == 0) {
-                System.out.println("THIS SHOULD NOT HAPPEN");
-            }
-            return result;
-        } else {
-            Coordinate [] result = allMoves.toArray(new Coordinate[0]);
-            if (result.length == 0) {
-                System.out.println("THIS SHOULD NOT HAPPEN");
-            }
-            return result;
-        }
+        if (!results.y || results.x.size() == 0) {
+            return TileManager.getAllPossibleMoves(tileBoard, player);
+        } else return allMoves.toArray(new Coordinate[0]);
     }
 }
