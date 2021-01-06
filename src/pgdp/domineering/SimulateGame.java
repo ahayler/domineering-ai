@@ -2,6 +2,7 @@ package pgdp.domineering;
 
 import pgdp.domineering.ai.MinMaxAI_V2;
 import pgdp.domineering.ai.MinMaxAI_V1;
+import pgdp.domineering.ai.MinMaxAI_V3;
 import pgdp.domineering.evaluation_function.ExtendedRealAndSafeMovesEvaluationFunction;
 
 public class SimulateGame {
@@ -10,7 +11,7 @@ public class SimulateGame {
     }
 
     public static void testSimpleGameStructure() {
-        Game game = new Game(new MinMaxAI_V2(5, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
+        Game game = new Game(new MinMaxAI_V3(5, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
                 false, 13, true, true),
                 new MinMaxAI_V2(2, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
                         false, 13, true, false), Mode.EASY);

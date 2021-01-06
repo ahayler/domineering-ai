@@ -875,4 +875,16 @@ public class TileManager {
 
         return list;
     }
+
+    public static String hashTileBoard(Tile[][] tileBoard) {
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                if(tileBoard[i][j].getTileChar() == 'E') stringBuilder.append('0'); else stringBuilder.append('1');
+            }
+        }
+        return stringBuilder.toString();
+    }
 }
