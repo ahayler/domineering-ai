@@ -39,7 +39,7 @@ public class MinMaxAI_V3 extends AI {
         this.useAlphaBeta = useAlphaBeta;
 
         this.turnNumber = 0;
-        hashtable = new Hashtable<String, int[]>(1000);
+        hashtable = new Hashtable<String, int[]>();
     }
 
     @Override
