@@ -307,7 +307,7 @@ public class MinMaxAI_V3 extends AI {
         boolean opponentWins = false;
         boolean gameDecided = false;
 
-        int[] metrics = TileManager.getRealMovesSafeMovesAndPossibilitiesVerticalAndHorizontal(tileBoard);
+        int[] metrics = TileManager.getRealSafeFreePossibilitiesVerticalAndHorizontal(tileBoard);
 
         int realMovesVertical = metrics[0];
         int realMovesHorizontal = metrics[1];
@@ -315,6 +315,8 @@ public class MinMaxAI_V3 extends AI {
         int safeMovesHorizontal = metrics[3];
         int verticalSafeMovePossibilities = metrics[4];
         int horizontalSafeMovePossibilities = metrics[5];
+        int verticalFreeMoves = metrics[6];
+        int horizontalFreeMoves = metrics[7];
 
         int verticalMobility = 0;
         int horizontalMobility = 0;
@@ -354,7 +356,7 @@ public class MinMaxAI_V3 extends AI {
         int[] evaluation = evaluationFunction.evaluate(
                 verticalMobility, horizontalMobility, realMovesVertical,
                 realMovesHorizontal, safeMovesVertical, safeMovesHorizontal,
-                verticalSafeMovePossibilities, horizontalSafeMovePossibilities);
+                verticalSafeMovePossibilities, horizontalSafeMovePossibilities, verticalFreeMoves, horizontalFreeMoves);
 
         /* if there is a winner modify the evaluation accordingly
         (the +/- is there so that the AI doesn't play like shit just because it has lost/won)

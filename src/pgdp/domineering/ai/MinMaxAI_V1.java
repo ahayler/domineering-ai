@@ -308,7 +308,7 @@ public class MinMaxAI_V1 extends AI {
         int[] evaluation = evaluationFunction.evaluate(
                 verticalMobility, horizontalMobility, realMovesVertical,
                 realMovesHorizontal, safeMovesVertical, safeMovesHorizontal,
-                verticalSafeMovePossibilities, horizontalSafeMovePossibilities);
+                verticalSafeMovePossibilities, horizontalSafeMovePossibilities, 0, 0);
 
         /* if there is a winner modify the evaluation accordingly
         (the +/- is there so that the AI doesn't play like shit just because it has lost/won)

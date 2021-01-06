@@ -5,6 +5,7 @@ import pgdp.domineering.ai.MinMaxAI_V1;
 import pgdp.domineering.ai.MinMaxAI_V3;
 import pgdp.domineering.evaluation_function.ExtendedRealAndSafeMovesEvaluationFunction;
 import pgdp.domineering.evaluation_function.RealAndSafeMovesEvaluationFunction;
+import pgdp.domineering.evaluation_function.ReworkedEvaluationFunction;
 
 public class PenguAI extends AI {
 
@@ -15,7 +16,7 @@ public class PenguAI extends AI {
             false, 0, true, false);
     private AI MediumAI = new MinMaxAI_V2(2, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
             false, 10, true, false);
-    private AI HardAI = new MinMaxAI_V3(4, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
+    private AI HardAI = new MinMaxAI_V3(4, new ReworkedEvaluationFunction(), true,
             false, 11, true, true);
 
     @Override

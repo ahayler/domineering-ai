@@ -887,4 +887,160 @@ public class TileManager {
         }
         return stringBuilder.toString();
     }
+
+    public static int[] getRealSafeFreePossibilitiesVerticalAndHorizontal(Tile[][] tileBoard) {
+        /*
+        Return all the important data in the following order:
+        verticalRealMoves, horizontalRealMoves, verticalSafeMoves, horizontalSafeMoves,
+        verticalPossibilities, horizontalPossibilities
+        */
+
+        // lets get the vertical counts first ==> iterate over all columns
+        int verticalRealMoves = 0;
+        int verticalSafeMoves = 0;
+        int verticalPossibilities = 0;
+        int verticalFreeMoves = 0;
+        for (int i = 0; i < tileBoard.length; i++) {
+            int realTileCount = 0;
+            int safeTileCount = 0;
+            int possibilityCount = 0;
+            int freeTileCount = 0;
+            int direction = 0;
+            for (int j = 0; j < tileBoard[0].length; j++) {
+                if (tileBoard[i][j].isEmpty()) {
+                    // check if it is an Empty tile
+                    realTileCount++;
+
+                    if (tileBoard[i][j].isVerticalSafeTile()) {
+                        // check if it is also a safe tile
+                        safeTileCount++;
+
+                        verticalPossibilities += possibilityCount / 2;
+                        possibilityCount = 0;
+
+                        verticalFreeMoves += freeTileCount / 2;
+                        freeTileCount = 0;
+                    } else {
+                        verticalSafeMoves += safeTileCount / 2;
+                        safeTileCount = 0;
+
+                        if (tileBoard[i][j].isVerticalPossibilityTile()) {
+                            if (direction == tileBoard[i][j].getVerticalPossibilityDirection()) {
+                                possibilityCount++;
+                            } else {
+                                // wall direction changes (1 because this tile is a possibility tile)
+                                verticalPossibilities += possibilityCount / 2;
+                                possibilityCount = 1;
+                                direction = tileBoard[i][j].getVerticalPossibilityDirection();
+                            }
+
+                            verticalFreeMoves += freeTileCount / 2;
+                            freeTileCount = 0;
+                        } else {
+                            verticalPossibilities += possibilityCount / 2;
+                            possibilityCount = 0;
+
+                            // if it's neither a safe nor possibility tile it is a free tile
+                            freeTileCount++;
+                        }
+                    }
+
+                } else {
+                    // filled tile
+                    verticalRealMoves += realTileCount / 2;
+                    realTileCount = 0;
+
+                    verticalSafeMoves += safeTileCount / 2;
+                    safeTileCount = 0;
+
+                    verticalPossibilities += possibilityCount / 2;
+                    possibilityCount = 0;
+
+                    verticalFreeMoves += freeTileCount / 2;
+                    freeTileCount = 0;
+                }
+            }
+            // end of column
+            verticalRealMoves += realTileCount / 2;
+            verticalSafeMoves += safeTileCount / 2;
+            verticalPossibilities += possibilityCount / 2;
+            verticalFreeMoves += freeTileCount / 2;
+        }
+
+        // And all again for the horizontal direction
+        int horizontalRealMoves = 0;
+        int horizontalSafeMoves = 0;
+        int horizontalPossibilities = 0;
+        int horizontalFreeMoves = 0;
+        for (int j = 0; j < tileBoard[0].length; j++) {
+            int realTileCount = 0;
+            int safeTileCount = 0;
+            int possibilityCount = 0;
+            int freeTileCount = 0;
+            int direction = 0;
+            for (int i = 0; i < tileBoard.length; i++) {
+                if (tileBoard[i][j].isEmpty()) {
+                    // check if it is an Empty tile
+                    realTileCount++;
+
+                    if (tileBoard[i][j].isHorizontalSafeTile()) {
+                        // check if it is also a safe tile
+                        safeTileCount++;
+
+                        horizontalPossibilities += possibilityCount / 2;
+                        possibilityCount = 0;
+
+                        horizontalFreeMoves += freeTileCount / 2;
+                        freeTileCount = 0;
+                    } else {
+                        horizontalSafeMoves += safeTileCount / 2;
+                        safeTileCount = 0;
+
+                        if (tileBoard[i][j].isHorizontalPossibilityTile()) {
+                            if (direction == tileBoard[i][j].getHorizontalPossibilityDirection()) {
+                                possibilityCount++;
+                            } else {
+                                // wall direction changes (1 because this tile is a possiblity tile)
+                                horizontalPossibilities += possibilityCount / 2;
+                                possibilityCount = 1;
+                                direction = tileBoard[i][j].getHorizontalPossibilityDirection();
+                            }
+
+                            horizontalFreeMoves += freeTileCount / 2;
+                            freeTileCount = 0;
+                        } else {
+                            horizontalPossibilities += possibilityCount / 2;
+                            possibilityCount = 0;
+
+                            // if its empty and neither a safe tile nor possibility tile it's a free tile
+                            freeTileCount++;
+                        }
+                    }
+
+                } else {
+                    // filled tile interrupts
+                    horizontalRealMoves += realTileCount / 2;
+                    realTileCount = 0;
+
+                    horizontalSafeMoves += safeTileCount / 2;
+                    safeTileCount = 0;
+
+                    horizontalPossibilities += possibilityCount / 2;
+                    possibilityCount = 0;
+
+                    horizontalFreeMoves += freeTileCount / 2;
+                    freeTileCount = 0;
+                }
+            }
+            // end of row
+            horizontalRealMoves += realTileCount / 2;
+            horizontalSafeMoves += safeTileCount / 2;
+            horizontalPossibilities += possibilityCount / 2;
+            horizontalFreeMoves += freeTileCount / 2;
+        }
+
+        return new int[]{verticalRealMoves, horizontalRealMoves, verticalSafeMoves,
+                horizontalSafeMoves, verticalPossibilities, horizontalPossibilities,
+                verticalFreeMoves, horizontalFreeMoves};
+    }
 }

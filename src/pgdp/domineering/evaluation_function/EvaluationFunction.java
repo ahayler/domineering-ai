@@ -4,7 +4,8 @@ abstract public class EvaluationFunction {
 
     abstract public int[] evaluate(int verticalMobility, int horizontalMobility, int verticalRealMoves,
                                    int horizontalRealMoves, int verticalSafeMoves, int horizontalSafeMoves,
-                                   int verticalSafeMovePossibilities, int horizontalSafeMovePossibilities);
+                                   int verticalSafeMovePossibilities, int horizontalSafeMovePossibilities,
+                                   int freeMovesVertical, int freeMovesHorizontal);
 
     abstract public boolean mobilityNeeded();
 }
