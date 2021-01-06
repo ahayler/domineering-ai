@@ -6,7 +6,6 @@ import pgdp.domineering.ai.MinMaxAI_V3;
 import pgdp.domineering.evaluation_function.ExtendedRealAndSafeMovesEvaluationFunction;
 import pgdp.domineering.evaluation_function.RealAndSafeMovesEvaluationFunction;
 
-
 public class PenguAI extends AI {
 
     public static final boolean PARTICIPATING = true;
