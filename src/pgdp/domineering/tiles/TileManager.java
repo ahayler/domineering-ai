@@ -797,6 +797,10 @@ public class TileManager {
         return coordinateInBounds(tileBoard, move) && tileBoard[move.getX()][move.getY()].getTileChar() != 'E';
     }
 
+    public static boolean isFilledTileOrBorder(Tile[][] tileBoard, Coordinate move) {
+        return !coordinateInBounds(tileBoard, move) || tileBoard[move.getX()][move.getY()].getTileChar() != 'E';
+    }
+
     public static boolean isEmptyTile(Tile[][] tileBoard, Coordinate move) {
         return coordinateInBounds(tileBoard, move) && tileBoard[move.getX()][move.getY()].getTileChar() == 'E';
     }
@@ -837,7 +841,7 @@ public class TileManager {
         return false;
     }
 
-    public static List<Coordinate> getAllExtensionMoves (Tile[][] tileBoard, Player player) {
+    public static List<Coordinate> getAllSmallExtensionMoves(Tile[][] tileBoard, Player player) {
         int width = tileBoard.length;
         int height = tileBoard[0].length;
         List<Coordinate> list = new ArrayList<Coordinate>();
@@ -845,6 +849,21 @@ public class TileManager {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if(isExtensionMoveSmall(tileBoard, new Coordinate(i, j), player))
+                    list.add(new Coordinate(i, j));
+            }
+        }
+
+        return list;
+    }
+
+    public static List<Coordinate> getAllBigExtensionMoves(Tile[][] tileBoard, Player player) {
+        int width = tileBoard.length;
+        int height = tileBoard[0].length;
+        List<Coordinate> list = new ArrayList<Coordinate>();
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                if(isExtensionMoveBig(tileBoard, new Coordinate(i, j), player))
                     list.add(new Coordinate(i, j));
             }
         }
@@ -884,14 +903,14 @@ public class TileManager {
         if (player == Player.V) {
             for (int i = 1; i < width; i+= 2) {
                 for (int j = 0; j < height; j++) {
-                    if(isExtensionMoveSmall(tileBoard, new Coordinate(i, j), player))
+                    if(isExtensionMoveBig(tileBoard, new Coordinate(i, j), player))
                         list.add(new Coordinate(i, j));
                 }
             }
         } else {
             for (int i = 0; i < width; i++) {
                 for (int j = 1; j < height; j+= 2) {
-                    if(isExtensionMoveSmall(tileBoard, new Coordinate(i, j), player))
+                    if(isExtensionMoveBig(tileBoard, new Coordinate(i, j), player))
                         list.add(new Coordinate(i, j));
                 }
             }
@@ -902,34 +921,43 @@ public class TileManager {
 
     public static boolean isExtensionMoveBig(Tile[][] tileBoard, Coordinate move, Player player) {
         /*
-        An extension move has a tile to at least one of the short sides and is surrounded by empty tiles on
-        the long sides.
+        A big extension move has a filled tile or border to at least one of the short sides and is surrounded by empty tiles on
+        the long sides except a max of one filled tile
         */
         if (movePossible(tileBoard, move, player)) {
             if (player == Player.V) {
-                // check if there is a filled tile to the top or bottom
-                if (isFilledTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1))
-                        || isFilledTile(tileBoard, new Coordinate(move.getX(), move.getY() + 2))) {
-                    // now check if it is surrounded by empty tiles (first left then right)
-                    if (isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY())) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY() + 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY())) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() + 1))
-                    ) {
-                        return true;
-                    }
+                // check if there is a filled tile to the top or bottom (or border)
+                if (isFilledTileOrBorder(tileBoard, new Coordinate(move.getX(), move.getY() - 1))
+                        || isFilledTileOrBorder(tileBoard, new Coordinate(move.getX(), move.getY() + 2))) {
+                    // now count the number of empty tiles (first left then right)
+                    int emptyTileCount = 0;
+                    if (isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY())))
+                        emptyTileCount++;
+                    if (isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY() + 1)))
+                        emptyTileCount++;
+                    if(isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY())))
+                        emptyTileCount++;
+                    if(isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() + 1)))
+                        emptyTileCount++;
+
+                    return emptyTileCount >= 3;
                 }
             } else {
-                // check if there is a filled tile to left or right
-                if (isFilledTile(tileBoard, new Coordinate(move.getX() - 1, move.getY()))
-                        || isFilledTile(tileBoard, new Coordinate(move.getX() + 2, move.getY()))) {
-                    // now check if it is surrounded by empty tiles (first top then bottom)
-                    if (isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() - 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() + 1)) &&
-                            isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() + 1))
-                    )
-                        return true;
+                // check if there is a filled tile to left or right (or border)
+                if (isFilledTileOrBorder(tileBoard, new Coordinate(move.getX() - 1, move.getY()))
+                        || isFilledTileOrBorder(tileBoard, new Coordinate(move.getX() + 2, move.getY()))) {
+                    // now count the number of empty tiles (first top then bottom)
+                    int emptyTileCount = 0;
+                    if(isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1)))
+                        emptyTileCount++;
+                    if(isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() - 1)))
+                        emptyTileCount++;
+                    if(isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() + 1)))
+                        emptyTileCount++;
+                    if( isEmptyTile(tileBoard, new Coordinate(move.getX() + 1, move.getY() + 1)))
+                        emptyTileCount++;
+
+                    return emptyTileCount >= 3;
                 }
             }
         }

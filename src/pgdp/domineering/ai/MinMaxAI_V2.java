@@ -6,10 +6,8 @@ import pgdp.domineering.evaluation_function.EvaluationFunction;
 import pgdp.domineering.tiles.Tile;
 import pgdp.domineering.tiles.TileManager;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.BinaryOperator;
 
 public class MinMaxAI_V2 extends AI {
     private final int depth;
@@ -346,7 +344,7 @@ public class MinMaxAI_V2 extends AI {
         /*        List<Coordinate> allMoves = new ArrayList<>(TileManager.getBangerMoves(tileBoard, player));*/
         allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
-        // allMoves.addAll(TileManager.getAllExtensionMoves(tileBoard, player));
+        allMoves.addAll(TileManager.getAllSmallExtensionMoves(tileBoard, player));
 
 
         if (!results.y || results.x.size() == 0) {

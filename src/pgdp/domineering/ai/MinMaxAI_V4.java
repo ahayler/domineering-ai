@@ -2,7 +2,6 @@ package pgdp.domineering.ai;
 
 import pgdp.domineering.*;
 import pgdp.domineering.bias_function.BiasFunction;
-import pgdp.domineering.bias_function.BiasFunction_V0;
 import pgdp.domineering.evaluation_function.EvaluationFunction;
 import pgdp.domineering.tiles.Tile;
 import pgdp.domineering.tiles.TileManager;
@@ -421,7 +420,7 @@ public class MinMaxAI_V4 extends AI {
         /*        List<Coordinate> allMoves = new ArrayList<>(TileManager.getBangerMoves(tileBoard, player));*/
         allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
-        allMoves.addAll(TileManager.getAllExtensionMoves(tileBoard, player));
+        allMoves.addAll(TileManager.getAllBigExtensionMoves(tileBoard, player));
 
 
         if (!results.y || results.x.size() == 0) {
