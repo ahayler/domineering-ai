@@ -346,7 +346,7 @@ public class MinMaxAI_V3 extends AI {
             opponentWins = true;
         } else if (playerSafeMoves >= opponentRealMoves) { // If our safe turns >= opponents real turns: we win
             playerWins = true;
-        } else if (playerRealMoves <= opponentSafeMoves && playerRealMoves <= opponentRealMoves + 1) {
+        } else if (playerRealMoves <= opponentSafeMoves && playerRealMoves + 1 <= opponentRealMoves) {
             // If our real turns <= opponents safe turns and our real turns + 1 <= opponents real turns: we lose
             opponentWins = true;
         }
