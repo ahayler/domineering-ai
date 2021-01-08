@@ -8,18 +8,46 @@ import pgdp.domineering.tiles.TileManager;
 public class BiasFunction_V0 extends BiasFunction {
     @Override
     public int[] evaluate(Tile[][] tileBoard, Coordinate move, Player player) {
-        int biasFirst = 0;
-        int biasSecond = 0;
+        return new int[]{0, 0};
 
-        // first build an Anti-Safe Move Bias (MaxPlayer get's Minus, MinPlayer get's Plus)
-        int[] evalBoardBefore = TileManager.getRealSafeFreePossibilitiesVerticalAndHorizontal(tileBoard);
-        if(player == Player.V) {
-            if(evalBoardBefore[0] != evalBoardBefore[2] && TileManager.isSafeMove(tileBoard, move, player))
-                biasFirst--;
+        /*int biasFirst = 0;
+        int biasSecond = 0;
+        int indexBase;
+        int baseFactor;
+        if (player == Player.V) {
+            indexBase = 0;
+            baseFactor = 1;
         } else {
-            if(evalBoardBefore[1] != evalBoardBefore[3] && TileManager.isSafeMove(tileBoard, move, player))
-                biasFirst++;
-        }
-        return new int[]{biasFirst, biasSecond};
+            indexBase = 1;
+            baseFactor = -1;
+        }*/
+
+
+/*        // evaluate board before and after
+        int[] results_before =
+                TileManager.getRealSafeFreePossibilitiesVerticalAndHorizontal(tileBoard);
+        int[] results_after =
+                TileManager.getRealSafeFreePossibilitiesVerticalAndHorizontal(
+                        TileManager.makeMoveAndCopyBoard(tileBoard, move, player));
+
+        // if the Player doesn't create a safe move attach a penality
+        if (results_before[indexBase + 2] <= results_after[indexBase + 2])
+            biasSecond -= baseFactor * 50;*/
+
+/*            // Root node bias
+            if (TileManager.getAllPossibleMoves(tileBoard, player).length > 50) {
+                Tile[][] updatedBoard = TileManager.makeMoveAndCopyBoard(tileBoard, move, player);
+                biasSecond += evaluateRootNodes(updatedBoard);
+            }*/
+    }
+
+    public static int evaluateRootNodes(Tile[][] tileBoard) {
+        int count = 0;
+        count += BiasAssistant.evaluateRootRow(tileBoard, 1);
+        count += BiasAssistant.evaluateRootRow(tileBoard, 11);
+        count += BiasAssistant.evaluateRootColumn(tileBoard, 1);
+        count += BiasAssistant.evaluateRootColumn(tileBoard, 11);
+
+        return count;
     }
 }

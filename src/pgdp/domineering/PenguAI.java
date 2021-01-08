@@ -3,6 +3,8 @@ package pgdp.domineering;
 import pgdp.domineering.ai.MinMaxAI_V2;
 import pgdp.domineering.ai.MinMaxAI_V1;
 import pgdp.domineering.ai.MinMaxAI_V3;
+import pgdp.domineering.ai.MinMaxAI_V4;
+import pgdp.domineering.bias_function.BiasFunction_V0;
 import pgdp.domineering.evaluation_function.ExtendedRealAndSafeMovesEvaluationFunction;
 import pgdp.domineering.evaluation_function.RealAndSafeMovesEvaluationFunction;
 import pgdp.domineering.evaluation_function.ReworkedEvaluationFunction;
@@ -15,8 +17,8 @@ public class PenguAI extends AI {
             false, 0, true, false);
     private AI MediumAI = new MinMaxAI_V2(2, new ExtendedRealAndSafeMovesEvaluationFunction(), true,
             false, 10, true, false);
-    private AI HardAI = new MinMaxAI_V3(4, new ReworkedEvaluationFunction(), true,
-            false, 11, true, true);
+    private AI HardAI = new MinMaxAI_V4(5, new ReworkedEvaluationFunction(), true,
+            false, 13, true, true,new BiasFunction_V0());;
 
     @Override
     public synchronized Coordinate playMove(char[][] board, Player player, Mode mode) {

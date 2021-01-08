@@ -117,7 +117,7 @@ public class MinMaxAI_V1 extends AI {
 
                     if (useAlphaBeta) {
                         // alpha = max(alpha, eval)
-                        if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < alpha[1])) {
+                        if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < beta[1])) {
                             beta = evaluation;
                         }
 
@@ -225,7 +225,7 @@ public class MinMaxAI_V1 extends AI {
 
             if (useAlphaBeta) {
                 // alpha = max(alpha, eval)
-                if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < alpha[1])) {
+                if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < beta[1])) {
                     beta = evaluation;
                 }
 
