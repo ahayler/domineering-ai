@@ -927,8 +927,8 @@ public class TileManager {
         if (movePossible(tileBoard, move, player)) {
             if (player == Player.V) {
                 // check if there is a filled tile to the top or bottom (or border)
-                if (isFilledTileOrBorder(tileBoard, new Coordinate(move.getX(), move.getY() - 1))
-                        || isFilledTileOrBorder(tileBoard, new Coordinate(move.getX(), move.getY() + 2))) {
+                if (isFilledTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1))
+                        || isFilledTile(tileBoard, new Coordinate(move.getX(), move.getY() + 2))) {
                     // now count the number of empty tiles (first left then right)
                     int emptyTileCount = 0;
                     if (isEmptyTile(tileBoard, new Coordinate(move.getX() - 1, move.getY())))
@@ -944,8 +944,8 @@ public class TileManager {
                 }
             } else {
                 // check if there is a filled tile to left or right (or border)
-                if (isFilledTileOrBorder(tileBoard, new Coordinate(move.getX() - 1, move.getY()))
-                        || isFilledTileOrBorder(tileBoard, new Coordinate(move.getX() + 2, move.getY()))) {
+                if (isFilledTile(tileBoard, new Coordinate(move.getX() - 1, move.getY()))
+                        || isFilledTile(tileBoard, new Coordinate(move.getX() + 2, move.getY()))) {
                     // now count the number of empty tiles (first top then bottom)
                     int emptyTileCount = 0;
                     if(isEmptyTile(tileBoard, new Coordinate(move.getX(), move.getY() - 1)))
