@@ -1,7 +1,9 @@
 package pgdp.domineering.ai;
 
 import pgdp.domineering.*;
+import pgdp.domineering.bias_function.BiasFunction;
 import pgdp.domineering.evaluation_function.EvaluationFunction;
+import pgdp.domineering.opening.Opening;
 import pgdp.domineering.tiles.Tile;
 import pgdp.domineering.tiles.TileManager;
 
@@ -9,9 +11,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-public class MinMaxAI_V3 extends AI {
+public class MinMaxAI_V5 extends AI {
     /*
-    V3 now also uses a Hash Table*/
+    V5 kills bias function and tries to introduce opening moves
+    */
     private final int depth;
     private final EvaluationFunction evaluationFunction;
     private final boolean useSafeMovePruning;
@@ -22,12 +25,14 @@ public class MinMaxAI_V3 extends AI {
     private int turnNumber;
 
     private final boolean useAlphaBeta;
+    private final Opening opening;
 
     private Hashtable<String, int[]> hashtable;
 
 
-    public MinMaxAI_V3(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
-                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning) {
+    public MinMaxAI_V5(int depth, EvaluationFunction evaluationFunction, boolean useSafeMovePruning,
+                       boolean increaseDepth, int increaseDepthTurn, boolean useAlphaBeta, boolean useSMCMovePruning,
+                       Opening opening) {
         this.depth = depth;
         this.evaluationFunction = evaluationFunction;
         this.useSafeMovePruning = useSafeMovePruning;
@@ -39,6 +44,7 @@ public class MinMaxAI_V3 extends AI {
         this.useAlphaBeta = useAlphaBeta;
 
         this.turnNumber = 0;
+        this.opening = opening;
         hashtable = new Hashtable<String, int[]>(1100);
     }
 
@@ -62,6 +68,11 @@ public class MinMaxAI_V3 extends AI {
 
     public Coordinate minMaxHead(Tile[][] tileBoard, int depth, Player player) {
 
+        // check for opening moves before anything else
+        Coordinate openingMove = opening.findOpeningMove(tileBoard, player);
+        if(openingMove != null)
+            return openingMove;
+
         // the head is very similar to mixMax itself but it returns the coordinate.
         int[] alpha = new int[]{-2000, -2000};
         int[] beta = new int[]{2000, 2000};
@@ -75,8 +86,9 @@ public class MinMaxAI_V3 extends AI {
 
         if (player == Player.V) {
             // MAX
-            int maxRealMovesDiff = -2000;
-            int maxSafeMoveDiff = -2000;
+            int maxFirst = -2000;
+            int maxSecond = -2000;
+
             Coordinate bestMove = null;
             for (int i = 0; i < movesArray.length; i++) {
                 Tile[][] updatedBoard = TileManager.makeMoveAndCopyBoard(tileBoard, movesArray[i], player);
@@ -95,14 +107,14 @@ public class MinMaxAI_V3 extends AI {
 
 
                 // max(evaluation, best move)
-                if (evaluation[0] >= 1000) {
+                if (evaluation[0] > 900) {
                     // if a winning move is found end search
                     return movesArray[i];
-                } else if (evaluation[0] > maxRealMovesDiff ||
-                        (evaluation[0] == maxRealMovesDiff && evaluation[1] > maxSafeMoveDiff)) {
+                } else if (evaluation[0] > maxFirst ||
+                        (evaluation[0] == maxFirst && evaluation[1] > maxSecond)) {
                     // is new max
-                    maxRealMovesDiff = evaluation[0];
-                    maxSafeMoveDiff = evaluation[1];
+                    maxFirst = evaluation[0];
+                    maxSecond = evaluation[1];;
                     bestMove = movesArray[i];
                 }
 
@@ -120,8 +132,8 @@ public class MinMaxAI_V3 extends AI {
 
         } else {
             // MIN
-            int minRealMovesDiff = 2000;
-            int minSafeMoveDiff = 2000;
+            int minFirst = 2000;
+            int minSecond = 2000;
             Coordinate bestMove = null;
 
             for (int i = 0; i < movesArray.length; i++) {
@@ -140,18 +152,19 @@ public class MinMaxAI_V3 extends AI {
                 }
 
                 // min(eval, best move)
-                if (evaluation[0] <= -1000) {
+                if (evaluation[0] < -900) {
                     // if a winning move is found end search
                     return movesArray[i];
-                } else if (evaluation[0] < minRealMovesDiff ||
-                        (evaluation[0] == minRealMovesDiff && evaluation[1] < minSafeMoveDiff)) {
+
+                } else if (evaluation[0]  < minFirst ||
+                        (evaluation[0] == minFirst && evaluation[1] < minSecond)) {
                     // is new max
-                    minRealMovesDiff = evaluation[0];
-                    minSafeMoveDiff = evaluation[1];
+                    minFirst = evaluation[0];
+                    minSecond = evaluation[1];
                     bestMove = movesArray[i];
 
                     if (useAlphaBeta) {
-                        // alpha = max(alpha, eval)
+                        // beta = min(beta, eval)
                         if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < beta[1])) {
                             beta = evaluation;
                         }
@@ -219,7 +232,7 @@ public class MinMaxAI_V3 extends AI {
                 hashtable.put(hash, evaluation);
             }
 
-            if (evaluation[0] == 1000) {
+            if (evaluation[0] > 900) {
                 // if a winning move is found end search
                 return evaluation;
             } else if (evaluation[0] > maxRealMovesDiff ||
@@ -267,7 +280,7 @@ public class MinMaxAI_V3 extends AI {
                 hashtable.put(hash, evaluation);
             }
 
-            if (evaluation[0] == -1000) {
+            if (evaluation[0] < -900) {
                 // if a winning move is found end search
                 return evaluation;
             } else if (evaluation[0] < minRealMovesDiff ||
@@ -278,7 +291,7 @@ public class MinMaxAI_V3 extends AI {
             }
 
             if (useAlphaBeta) {
-                // alpha = max(alpha, eval)
+                // beta = min(beta, eval)
                 if (evaluation[0] < beta[0] || (evaluation[0] == beta[0] && evaluation[1] < beta[1])) {
                     beta = evaluation;
                 }
@@ -300,9 +313,6 @@ public class MinMaxAI_V3 extends AI {
         If the game has ended the method returns the winner by stating -1000 or +1000.
         If not it returns the static Evaluation of the board.
          */
-        Player opponent;
-        if (player == Player.V) opponent = Player.H;
-        else opponent = Player.V;
         boolean playerWins = false;
         boolean opponentWins = false;
         boolean gameDecided = false;
@@ -318,8 +328,6 @@ public class MinMaxAI_V3 extends AI {
         int verticalFreeMoves = metrics[6];
         int horizontalFreeMoves = metrics[7];
 
-        int verticalMobility = 0;
-        int horizontalMobility = 0;
 
         int playerRealMoves, playerSafeMoves, opponentRealMoves, opponentSafeMoves;
         if (player == Player.V) {
@@ -351,29 +359,30 @@ public class MinMaxAI_V3 extends AI {
             opponentWins = true;
         }
 
-
         // calculate the normal Evaluation Function
         int[] evaluation = evaluationFunction.evaluate(
-                verticalMobility, horizontalMobility, realMovesVertical,
+                0, 0, realMovesVertical,
                 realMovesHorizontal, safeMovesVertical, safeMovesHorizontal,
                 verticalSafeMovePossibilities, horizontalSafeMovePossibilities, verticalFreeMoves, horizontalFreeMoves);
 
+        if (lastMoveWasASafeMove && playerRealMoves > playerSafeMoves){
+            /*
+            This means that the player could have played a real move instead.
+            At this point we prune the search and add a penalty of 500.
+            Playing a safe if there is an alternative is a next to a certain loss.
+             */
+            gameDecided = true;
+            if (player == Player.V) evaluation[0] -= 1500; else evaluation[0] += 1500;
+        }
         /* if there is a winner modify the evaluation accordingly
         (the +/- is there so that the AI doesn't play like shit just because it has lost/won)
         */
-        if ((playerWins && player == Player.V) || (opponentWins && player == Player.H)) {
+        else if ((playerWins && player == Player.V) || (opponentWins && player == Player.H)) {
             evaluation[0] += 1000;
             gameDecided = true;
         } else if ((playerWins && player == Player.H) || (opponentWins && player == Player.V)) {
             evaluation[0] += -1000;
             gameDecided = true;
-        } else if (lastMoveWasASafeMove && playerRealMoves > playerSafeMoves){
-            /*
-            This means that the player could have played a real move instead.
-            At this point we prune the search and add a penalty of 500.
-             */
-            gameDecided = true;
-            if (player == Player.V) evaluation[0] -= 500; else evaluation[0] += 500;
         }
 
         return new Tuple<>(gameDecided, evaluation);
@@ -394,10 +403,9 @@ public class MinMaxAI_V3 extends AI {
     public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
         Tuple<List<Coordinate>, Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
         HashSet<Coordinate> allMoves = new HashSet<>(TileManager.getBangerMoves(tileBoard, player));
-        /*        List<Coordinate> allMoves = new ArrayList<>(TileManager.getBangerMoves(tileBoard, player));*/
         allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
-        allMoves.addAll(TileManager.getAllBigExtensionMoves(tileBoard, player));
+        allMoves.addAll(TileManager.getAllOddExtensionMovesBig(tileBoard, player));
 
 
         if (!results.y || results.x.size() == 0) {

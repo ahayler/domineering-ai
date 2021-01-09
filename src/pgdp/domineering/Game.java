@@ -39,8 +39,10 @@ public class Game {
             if (getMobility(board, playerVertical) > 0) {
                 Coordinate moveVertical = verticalAI.playMove(board, playerVertical, mode);
 
-                if (movePossible(board, moveVertical, playerVertical))
+                if (movePossible(board, moveVertical, playerVertical)) {
                     makeMove(board, moveVertical, playerVertical);
+                    System.out.println(moveVertical);
+                }
                 else {
                     this.winner = horizontalAI;
                     return;
@@ -63,8 +65,10 @@ public class Game {
             if (getMobility(board, playerHorizontal) > 0) {
                 Coordinate moveHorizontal = horizontalAI.playMove(board, playerHorizontal, mode);
 
-                if (movePossible(board, moveHorizontal, playerHorizontal))
+                if (movePossible(board, moveHorizontal, playerHorizontal)) {
                     makeMove(board, moveHorizontal, playerHorizontal);
+                    System.out.println(moveHorizontal);
+                }
                 else {
                     this.winner = verticalAI;
                     return;

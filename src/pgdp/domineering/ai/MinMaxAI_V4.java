@@ -106,7 +106,7 @@ public class MinMaxAI_V4 extends AI {
 
 
                 // max(evaluation, best move)
-                if (evaluation[0] >= 1000) {
+                if (evaluation[0] > 900) {
                     // if a winning move is found end search
                     return movesArray[i];
                 } else if (evaluation[0] * 10 + biasEvaluation[0] > maxFirst * 10 + biasFirst ||
@@ -159,7 +159,7 @@ public class MinMaxAI_V4 extends AI {
                 int [] biasEvaluation = biasFunction.evaluate(tileBoard, movesArray[i], player);
 
                 // min(eval, best move)
-                if (evaluation[0] <= -1000) {
+                if (evaluation[0] < -900) {
                     // if a winning move is found end search
                     return movesArray[i];
 
@@ -242,7 +242,7 @@ public class MinMaxAI_V4 extends AI {
                 hashtable.put(hash, evaluation);
             }
 
-            if (evaluation[0] == 1000) {
+            if (evaluation[0] > 900) {
                 // if a winning move is found end search
                 return evaluation;
             } else if (evaluation[0] > maxRealMovesDiff ||
@@ -290,7 +290,7 @@ public class MinMaxAI_V4 extends AI {
                 hashtable.put(hash, evaluation);
             }
 
-            if (evaluation[0] == -1000) {
+            if (evaluation[0] < -900) {
                 // if a winning move is found end search
                 return evaluation;
             } else if (evaluation[0] < minRealMovesDiff ||
@@ -381,22 +381,24 @@ public class MinMaxAI_V4 extends AI {
                 realMovesHorizontal, safeMovesVertical, safeMovesHorizontal,
                 verticalSafeMovePossibilities, horizontalSafeMovePossibilities, verticalFreeMoves, horizontalFreeMoves);
 
+        if (lastMoveWasASafeMove && playerRealMoves > playerSafeMoves){
+            /*
+            This means that the player could have played a real move instead.
+            At this point we prune the search and add a penalty of 500.
+            Playing a safe if there is an alternative is a next to a certain loss.
+             */
+            gameDecided = true;
+            if (player == Player.V) evaluation[0] -= 1500; else evaluation[0] += 1500;
+        }
         /* if there is a winner modify the evaluation accordingly
         (the +/- is there so that the AI doesn't play like shit just because it has lost/won)
         */
-        if ((playerWins && player == Player.V) || (opponentWins && player == Player.H)) {
+        else if ((playerWins && player == Player.V) || (opponentWins && player == Player.H)) {
             evaluation[0] += 1000;
             gameDecided = true;
         } else if ((playerWins && player == Player.H) || (opponentWins && player == Player.V)) {
             evaluation[0] += -1000;
             gameDecided = true;
-        } else if (lastMoveWasASafeMove && playerRealMoves > playerSafeMoves){
-            /*
-            This means that the player could have played a real move instead.
-            At this point we prune the search and add a penalty of 500.
-             */
-            gameDecided = true;
-            if (player == Player.V) evaluation[0] -= 500; else evaluation[0] += 500;
         }
 
         return new Tuple<>(gameDecided, evaluation);
@@ -417,7 +419,6 @@ public class MinMaxAI_V4 extends AI {
     public Coordinate[] getAllMovesWithSMCPruning(Tile[][] tileBoard, Player player) {
         Tuple<List<Coordinate>, Boolean> results = TileManager.getAllSMCMoves(tileBoard, player);
         HashSet<Coordinate> allMoves = new HashSet<>(TileManager.getBangerMoves(tileBoard, player));
-        /*        List<Coordinate> allMoves = new ArrayList<>(TileManager.getBangerMoves(tileBoard, player));*/
         allMoves.addAll(TileManager.getAllBlockingMoves(tileBoard, player));
         allMoves.addAll(results.x);
         allMoves.addAll(TileManager.getAllOddExtensionMovesBig(tileBoard, player));

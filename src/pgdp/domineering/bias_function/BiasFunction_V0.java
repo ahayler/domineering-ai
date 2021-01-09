@@ -10,6 +10,7 @@ public class BiasFunction_V0 extends BiasFunction {
     public int[] evaluate(Tile[][] tileBoard, Coordinate move, Player player) {
         return new int[]{0, 0};
 
+        /*TEST*/
         /*int biasFirst = 0;
         int biasSecond = 0;
         int indexBase;
