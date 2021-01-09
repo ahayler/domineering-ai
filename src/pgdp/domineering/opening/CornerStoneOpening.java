@@ -73,39 +73,39 @@ public class CornerStoneOpening extends Opening {
     @Override
     public Coordinate findOpeningMove(Tile[][] tileBoard, Player player) {
 
-        if(player == Player.V) {
+        if (player == Player.V) {
             // check move number 1
-            if(TileManager.movePossible(tileBoard, new Coordinate(11, 10), player) &&
+            if (TileManager.movePossible(tileBoard, new Coordinate(11, 10), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(12, 10), player))
                 return new Coordinate(11, 10);
-            // check move number 2
-            else if(TileManager.movePossible(tileBoard, new Coordinate(1, 10), player) &&
+                // check move number 2
+            else if (TileManager.movePossible(tileBoard, new Coordinate(1, 10), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(0, 10), player))
                 return new Coordinate(1, 10);
-            // check move number 3
-            else if(TileManager.movePossible(tileBoard, new Coordinate(1, 0), player) &&
+                // check move number 3
+            else if (TileManager.movePossible(tileBoard, new Coordinate(1, 0), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(0, 0), player))
                 return new Coordinate(1, 0);
-            // check move number 4
-            else if(TileManager.movePossible(tileBoard, new Coordinate(11, 0), player) &&
+                // check move number 4
+            else if (TileManager.movePossible(tileBoard, new Coordinate(11, 0), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(12, 0), player))
                 return new Coordinate(11, 0);
             else return null;
         } else {
             // check move number 1
-            if(TileManager.movePossible(tileBoard, new Coordinate(10, 11), player) &&
+            if (TileManager.movePossible(tileBoard, new Coordinate(10, 11), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(10, 12), player))
                 return new Coordinate(10, 11);
-            // check move number 2
-            else if(TileManager.movePossible(tileBoard, new Coordinate(10, 1), player) &&
+                // check move number 2
+            else if (TileManager.movePossible(tileBoard, new Coordinate(10, 1), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(10, 0), player))
                 return new Coordinate(10, 1);
-            // check move number 3
-            else if(TileManager.movePossible(tileBoard, new Coordinate(0, 11), player) &&
+                // check move number 3
+            else if (TileManager.movePossible(tileBoard, new Coordinate(0, 11), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(0, 12), player))
                 return new Coordinate(0, 11);
-            // check move number 4
-            else if(TileManager.movePossible(tileBoard, new Coordinate(0, 1), player) &&
+                // check move number 4
+            else if (TileManager.movePossible(tileBoard, new Coordinate(0, 1), player) &&
                     TileManager.movePossible(tileBoard, new Coordinate(0, 0), player))
                 return new Coordinate(0, 1);
             else return null;
