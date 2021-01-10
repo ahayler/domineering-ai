@@ -10,7 +10,6 @@ import pgdp.domineering.opening.CornerStoneOpening;
 
 public class PenguAI extends AI {
 
-
     public static final boolean PARTICIPATING = true;
 
     private AI EasyAI = new MinMaxAI_V2(2, new RealAndSafeMovesEvaluationFunction(), true,
