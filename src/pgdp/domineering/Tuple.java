@@ -26,7 +26,6 @@ public class Tuple<X, Y> {
 
         Tuple<X,Y> other_ = (Tuple<X,Y>) other;
 
-        // this may cause NPE if nulls are valid values for x or y. The logic may be improved to handle nulls properly, if needed.
         return other_.x.equals(this.x) && other_.y.equals(this.y);
     }
 
