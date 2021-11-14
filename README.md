@@ -4,7 +4,7 @@ This project was created as a submission for a competition held by the Technical
 
 This year's goal was to build an AI for the mathematical game domineering on a 13 by 13 board (https://en.wikipedia.org/wiki/Domineering) that could beat out its competition from other students. Importantly we had serve time and ressource constraints (e.g. limiting the length of a game to 10 seconds), so the AI had to be well optimized. To encourge improvements up to the final deadline the competition was held with online rankings updated daily, so that you could see how changes to your AI fare against other players. After two weeks of strong competition, I managed to win the contest with a good margin (see picture below).
 
-![text](PGdP_verpixelt.png)
+<img src="PGdP_verpixelt.png" alt="drawing" width="200"/>
 
 In the following I will detail the core ideas that shaped my submission.
 
