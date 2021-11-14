@@ -2,7 +2,7 @@
 
 This project was created as a submission for a competition held by the Technical University of Munich as part of the 'Praktikum Grundlagen der Programmierung' (short PGdP - engl. Introduction to programming / compareable to e.g. CS50) modul. The course is attended by roughly 1500 to 2000 students of computer science and related fileds per year.
 
-This year's goal was to build an AI for the mathematical game domineering on a 13 by 13 board (https://en.wikipedia.org/wiki/Domineering) that could beat out its competition from other students. Importantly we had serve time and ressource constraints (e.g. limiting the length of a game to 10 seconds), so the AI had to be well optimized. To encourge improvements up to the final deadline the competition was held with online rankings updated daily, so that you could see how changes to your AI fare against other players. After two weeks of strong competition, I managed to win the contest with a good margin (see picture below).
+This year's goal was to build an AI for the mathematical game domineering on a 13 by 13 board (https://en.wikipedia.org/wiki/Domineering) that could beat out its competition from other students. Importantly we had servere time and ressource constraints (e.g. limiting the length of a game to 10 seconds), so the AI had to be well optimized. To encourge improvements up to the final deadline the competition was held with online rankings updated daily, so that you could see how changes to your AI fare against other players. After two weeks of strong competition, I managed to win the contest with a good margin (see picture below).
 
 <img src="PGdP_verpixelt.png" alt="drawing" width="400"/>
 
