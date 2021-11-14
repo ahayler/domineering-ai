@@ -14,9 +14,7 @@ As the basis of my AI I used a decision tree with Minmax (https://en.wikipedia.o
 
 **Improvements:**
 
--**Openings:**
-
-Especially in the first few moves, even a very well optimized AI (like a human in e.g. chess) can not look ahead for enough moves to determine which moves are really great and which are not. Thus, I spend some time analyzing the game and developing an opening.
+- **Openings:** Especially in the first few moves, even a very well optimized AI (like a human in e.g. chess) can not look ahead for enough moves to determine which moves are really great and which are not. Thus, I spend some time analyzing the game and developing an opening.
 
 - **Move Proposal Mechanism (SMC Pruning):** This is probably most important for 
 Runtime and allowed me to increase my depth from 3 to 5. After debugging a few games, I soon realized that most moves consistently suck. I was able to categorize the most useful moves into a few categories (to understand the following, I would recommend reading the Wikipedia article on domineering) :
