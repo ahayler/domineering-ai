@@ -59,5 +59,4 @@ You can convert a board to a String and back with the BoardConverter Class.
 
 That should be most of it!
 Thank you for reading! I hope that this helped you understand my code and thought process!
-Regardless of my final placement, this has been an amazing competition and learning experience!
 Many thanks to team that made this all possible!
